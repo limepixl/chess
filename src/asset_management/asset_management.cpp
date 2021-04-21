@@ -1,6 +1,7 @@
 #include "asset_management.hpp"
 #include <stdio.h>
 #include <glad/glad.h>
+#include <stb_image.h>
 
 Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 {
