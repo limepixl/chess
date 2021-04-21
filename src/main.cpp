@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #define SDL_MAIN_HANDLED
 #include "display/display.hpp"
+#include "asset_management/asset_management.hpp"
 
 int main()
 {
@@ -9,7 +10,9 @@ int main()
 
 	int windowWidth = 800;
 	int windowHeight = 600;
-	Display display = CreateDisplay("Chess - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);	
+	Display display = CreateDisplay("Chess - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);
+
+	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
 	
 	while(true)
 	{
