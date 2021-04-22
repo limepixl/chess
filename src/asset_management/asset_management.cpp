@@ -90,3 +90,44 @@ Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 
 	return {ID, uniforms};
 }
+
+Texture LoadTextureFromFile(const char *path)
+{
+	stbi_set_flip_vertically_on_load(1);
+
+	int width, height, channels;
+	unsigned char *data = stbi_load(path, &width, &height, &channels, 0);
+	if(!data)
+	{
+		printf("Failed to load texture from: %s\n", path);
+		return {0};
+	}
+
+	int index = Texture::numTexturesLoaded++;
+
+	unsigned int ID;
+	glGenTextures(1, &ID);
+
+	glActiveTexture(GL_TEXTURE0 + index);
+	glBindTexture(GL_TEXTURE_2D, ID);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	if(channels == 3)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	else if(channels == 4)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	else
+		printf("This number of channels is unsupported currently!\n");
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	stbi_image_free(data);
+	return {ID, index, width, height, channels};
+}

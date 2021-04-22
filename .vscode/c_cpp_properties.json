@@ -6,7 +6,8 @@
                 "${workspaceFolder}/*",
                 "${workspaceFolder}/thirdparty/SDL2/include",
                 "${workspaceFolder}/thirdparty/glad/include",
-                "${workspaceFolder}/thirdparty/glm/"
+                "${workspaceFolder}/thirdparty/glm/",
+                "${workspaceFolder}/thirdparty/stb_image"
             ],
             "defines": [
                 "_DEBUG",
