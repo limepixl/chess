@@ -7,3 +7,4 @@ struct Shader
 	unsigned int ID;
 	std::unordered_map<std::string, int> uniforms;
 };
+

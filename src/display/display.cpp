@@ -1,4 +1,5 @@
 #include "display.hpp"
+#include <SDL.h>
 #include <glad/glad.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,7 @@ Display CreateDisplay(const char* title, int width, int height)
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glViewport(0, 0, width, height);
 
-	return {window, width, height};
+	return {window, width, height, true};
 }
 
 void ProcessEvents(Display *display)
@@ -58,12 +59,14 @@ void ProcessEvents(Display *display)
 			{
 				SDL_GetWindowSize(display->window, &display->width, &display->height);
 				glViewport(0, 0, display->width, display->height);
+				display->changedSize = true;
 			}
 			else if(we.event == SDL_WINDOWEVENT_MAXIMIZED)
 			{
 				SDL_MaximizeWindow(display->window);
 				SDL_GetWindowSize(display->window, &display->width, &display->height);
 				glViewport(0, 0, display->width, display->height);
+				display->changedSize = true;
 			}
 		}
 		else if(e.type == SDL_QUIT)

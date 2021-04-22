@@ -1,10 +1,11 @@
 #pragma once
-#include <SDL.h>
 
 struct Display
 {
-	SDL_Window *window;
+	struct SDL_Window *window;
 	int width, height;
+	
+	bool changedSize;
 };
 
 Display CreateDisplay(const char *title, int width, int height);
