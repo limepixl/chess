@@ -3,6 +3,10 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+#include <vector>
+
 Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 {
 	FILE *vertexRaw = fopen(vertexPath, "rb");
@@ -130,4 +134,83 @@ Texture LoadTextureFromFile(const char *path)
 
 	stbi_image_free(data);
 	return {ID, index, width, height, channels};
+}
+
+Mesh LoadMeshFromOBJ(const char *path)
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+
+	std::string warning, error;
+	bool loaded = tinyobj::LoadObj(&attrib, &shapes, &materials, &error, path);
+	if(!loaded)
+	{
+		printf("Failed to load OBJ file from path: %s\n", path);
+	}
+
+	materials.push_back(tinyobj::material_t());
+	std::vector<float> &vertices = attrib.vertices;
+	std::vector<float> &uvs = attrib.texcoords;
+	std::vector<float> &normals = attrib.normals;
+
+	std::vector<float> finalVertices;
+	std::vector<float> finalUVs;
+	std::vector<float> finalNormals;
+	finalVertices.reserve(vertices.size());
+	finalUVs.reserve(uvs.size());
+	finalNormals.reserve(normals.size());
+
+	for(auto &shape : shapes)
+	{
+		for(auto &index : shape.mesh.indices)
+		{
+			finalVertices.push_back(vertices[3 * index.vertex_index]);
+			finalVertices.push_back(vertices[3 * index.vertex_index + 1]);
+			finalVertices.push_back(vertices[3 * index.vertex_index + 2]);
+
+			finalUVs.push_back(uvs[2 * index.texcoord_index]);
+			finalUVs.push_back(uvs[2 * index.texcoord_index + 1]);
+
+			finalNormals.push_back(normals[3 * index.normal_index]);
+			finalNormals.push_back(normals[3 * index.normal_index + 1]);
+			finalNormals.push_back(normals[3 * index.normal_index + 2]);
+		}
+	}
+
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	unsigned int VBO[3];
+	glGenBuffers(3, VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, finalVertices.size() * sizeof(float), finalVertices.data(), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+	if(uvs.size() != 0)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+		glBufferData(GL_ARRAY_BUFFER, finalUVs.size() * sizeof(float), finalUVs.data(), GL_STATIC_DRAW);
+		
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
+	}
+
+	if(normals.size() != 0)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+		glBufferData(GL_ARRAY_BUFFER, finalNormals.size() * sizeof(float), finalNormals.data(), GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size()};
 }

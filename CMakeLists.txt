@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 3.14.7)
 project(chess)
 
-set(DUMMYAUDIO OFF)
-set(DIRECTX OFF)
-set(DISKAUDIO OFF)
-set(RENDER_D3D OFF)
 add_subdirectory(thirdparty/SDL2)
+add_subdirectory(thirdparty/tinyobjloader)
 include_directories(
 	thirdparty/SDL2/include 
 	thirdparty/glad/include
 	thirdparty/glm
-	thirdparty/stb_image)
+	thirdparty/stb_image
+	thirdparty/tinyobjloader)
 
 add_executable(
 	chess 

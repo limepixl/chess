@@ -4,3 +4,4 @@ build
 *.jpeg
 *.bmp
 *.ppm
+*.obj

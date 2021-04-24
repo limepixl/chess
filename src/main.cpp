@@ -17,7 +17,7 @@ int main()
 	int windowHeight = 720;
 	Display display = CreateDisplay("Chess - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);
 
-	Texture texture = LoadTextureFromFile("res/images/test.png");
+	Texture texture = LoadTextureFromFile("res/images/dragon_texture_color.png");
 	glActiveTexture(GL_TEXTURE0 + texture.index);
 	glBindTexture(GL_TEXTURE_2D, texture.ID);
 	
@@ -25,29 +25,8 @@ int main()
 	glUseProgram(shader.ID);
 	glUniform1i(shader.uniforms["tex"], texture.index);
 
-	float vertices[]
-	{
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f
-	};
-
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, 30 * sizeof(float), (void *)vertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+	Mesh dragon = LoadMeshFromOBJ("res/models/dragon.obj");
+	glBindVertexArray(dragon.VAO);
 
 	glm::mat4 view(1.0f);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -69,8 +48,8 @@ int main()
 		model = glm::rotate(model, glm::radians((float)SDL_GetTicks() / 2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(shader.uniforms["model"], 1, GL_FALSE, &model[0][0]);
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, (int)dragon.numVertices);
 
 		SDL_GL_SwapWindow(display.window);
 	}

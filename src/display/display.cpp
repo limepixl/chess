@@ -43,6 +43,10 @@ Display CreateDisplay(const char* title, int width, int height)
 	}
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glViewport(0, 0, width, height);
+	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	return {window, width, height, true};
 }
