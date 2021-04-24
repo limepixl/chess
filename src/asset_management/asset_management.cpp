@@ -169,12 +169,18 @@ Mesh LoadMeshFromOBJ(const char *path)
 			finalVertices.push_back(vertices[3 * index.vertex_index + 1]);
 			finalVertices.push_back(vertices[3 * index.vertex_index + 2]);
 
-			finalUVs.push_back(uvs[2 * index.texcoord_index]);
-			finalUVs.push_back(uvs[2 * index.texcoord_index + 1]);
+			if(uvs.size() != 0)
+			{
+				finalUVs.push_back(uvs[2 * index.texcoord_index]);
+				finalUVs.push_back(uvs[2 * index.texcoord_index + 1]);
+			}
 
-			finalNormals.push_back(normals[3 * index.normal_index]);
-			finalNormals.push_back(normals[3 * index.normal_index + 1]);
-			finalNormals.push_back(normals[3 * index.normal_index + 2]);
+			if(normals.size() != 0)
+			{
+				finalNormals.push_back(normals[3 * index.normal_index]);
+				finalNormals.push_back(normals[3 * index.normal_index + 1]);
+				finalNormals.push_back(normals[3 * index.normal_index + 2]);
+			}
 		}
 	}
 
@@ -212,5 +218,6 @@ Mesh LoadMeshFromOBJ(const char *path)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	printf("Loaded mesh: %s\nTriangle count: %d\n", shapes[0].name.c_str(), (int)finalVertices.size() / 3);
 	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size()};
 }
