@@ -18,7 +18,7 @@ int main()
 	Display display = CreateDisplay("Chess - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);
 
 	Shader texturedShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/texturef.glsl");
-	Texture boardTexture = LoadTextureFromFile("res/images/test.png");
+	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
 	Mesh board = LoadMeshFromOBJ("res/models/board.obj");
 	
 	Scene scene = LoadSceneFromFile("res/scenes/default.txt");

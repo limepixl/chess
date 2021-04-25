@@ -1,5 +1,6 @@
-- Cached meshes (bin file)
 - Mouse picking of meshes
 - Outline when selected
 - Highlight possible moves
+- Simple circular shadow
+- Cached meshes (bin file)
 - Stockfish implementation (optional)
