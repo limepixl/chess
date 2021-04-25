@@ -133,6 +133,7 @@ Texture LoadTextureFromFile(const char *path)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	stbi_image_free(data);
+	printf("Loaded texture: %s\n", path);
 	return {ID, index, width, height, channels};
 }
 

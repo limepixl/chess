@@ -21,7 +21,7 @@ struct Entity
 
 struct Scene
 {
-	std::vector<struct Mesh> meshes;
+	std::vector<Mesh> meshes;
 	std::vector<Entity> entities;
 };
 

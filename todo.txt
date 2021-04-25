@@ -1,5 +1,4 @@
 - Cached meshes (bin file)
-- Scene files
 - Mouse picking of meshes
 - Outline when selected
 - Highlight possible moves
