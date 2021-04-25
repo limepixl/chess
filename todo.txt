@@ -1,6 +1,6 @@
 - Cached meshes (bin file)
 - Scene files
-- Mouse picking of meshesh
+- Mouse picking of meshes
 - Outline when selected
 - Highlight possible moves
 - Stockfish implementation (optional)

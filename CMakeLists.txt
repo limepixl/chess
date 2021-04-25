@@ -16,6 +16,7 @@ add_executable(
 	src/display/display.cpp
 	src/asset_management/asset_management.cpp
 	src/math/math.cpp
+	src/asset_management/scene.cpp
 	thirdparty/glad/src/glad.c
 	thirdparty/stb_image/stb_image.c)
 

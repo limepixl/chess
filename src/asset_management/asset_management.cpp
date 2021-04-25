@@ -221,3 +221,57 @@ Mesh LoadMeshFromOBJ(const char *path)
 	printf("Loaded mesh: %s\nTriangle count: %d\n", shapes[0].name.c_str(), (int)finalVertices.size() / 3);
 	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size()};
 }
+
+Scene LoadSceneFromFile(const char *path)
+{
+	FILE *sceneRaw = fopen(path, "rb");
+	if(!sceneRaw)
+	{
+		printf("Failed to open scene file: %s!\n", path);
+	}
+
+	std::vector<Mesh> meshes;
+	std::vector<Entity> entities;
+
+	char lineType;
+	while((lineType = fgetc(sceneRaw)) != EOF)
+	{
+		switch(lineType)
+		{
+			case 'm':
+			{
+				char meshName[100];
+				fscanf(sceneRaw, " %s\n", meshName);
+
+				char tmp[100] = "res/models/";
+				meshes.push_back(LoadMeshFromOBJ(strcat(tmp, meshName)));
+				break;
+			}
+
+			case 'e':
+			{
+				int meshIndex;
+				float tx, ty, tz;
+				float rx, ry, rz;
+				float sx, sy, sz;
+				fscanf(sceneRaw, " %d %f %f %f %f %f %f %f %f %f\n", &meshIndex, &tx, &ty, &tz, &rx, &ry, &rz, &sx, &sy, &sz);
+
+				glm::vec3 translation(tx, ty, tz);
+				glm::vec3 rotation(rx, ry, rz);
+				glm::vec3 scale(sx, sy, sz);
+				entities.push_back({meshIndex, translation, rotation, scale});
+				break;
+			}
+
+			default:
+			{
+				printf("Character %c currently unsupported!\n", lineType);
+				break;
+			}
+		}
+	}
+
+	printf("Finished loading scene file: %s\n", path);
+	fclose(sceneRaw);
+	return {meshes, entities};
+}

@@ -1,6 +1,7 @@
 {
 	"files.associations": {
 		"stb_image.h": "c",
-		"vector": "cpp"
+		"vector": "cpp",
+		"unordered_map": "cpp"
 	}
 }
