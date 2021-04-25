@@ -9,4 +9,3 @@ struct Display
 };
 
 Display CreateDisplay(const char *title, int width, int height);
-void ProcessEvents(Display *display);

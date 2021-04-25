@@ -7,3 +7,8 @@ glm::mat4 GetProjectionMatrix(struct Display *display)
 	glm::mat4 projection = glm::perspective(glm::radians(40.0f), (float)display->width / display->height, 0.1f, 100.0f);
 	return projection;
 }
+
+float Lerp(float v0, float v1, float t)
+{
+	return (1 - t) * v0 + t * v1;
+}
