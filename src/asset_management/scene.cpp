@@ -20,6 +20,19 @@ void DrawScene(Scene *scene, Shader *shader)
 		model = glm::scale(model, scale);
 
 		glUniformMatrix4fv(shader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
+
+		if(current.side == 0) // white
+		{
+			glUniform3f(shader->uniforms["col"], 1.0f, 1.0f, 1.0f);
+		}
+		else if(current.side == 1) // black
+		{
+			glUniform3f(shader->uniforms["col"], 0.3f, 0.3f, 0.3f);
+		}
+		else // not a piece, just a normal mesh
+		{
+			glUniform3f(shader->uniforms["col"], -1.0f, -1.0f, -1.0f);
+		}
 		
 		Mesh currentMesh = scene->meshes[current.meshIndex];
 		glBindVertexArray(currentMesh.VAO);

@@ -254,12 +254,13 @@ Scene LoadSceneFromFile(const char *path)
 				float tx, ty, tz;
 				float rx, ry, rz;
 				float sx, sy, sz;
-				fscanf(sceneRaw, " %d %f %f %f %f %f %f %f %f %f\n", &meshIndex, &tx, &ty, &tz, &rx, &ry, &rz, &sx, &sy, &sz);
+				int side;
+				fscanf(sceneRaw, " %d %f %f %f %f %f %f %f %f %f %d\n", &meshIndex, &tx, &ty, &tz, &rx, &ry, &rz, &sx, &sy, &sz, &side);
 
 				glm::vec3 translation(tx, ty, tz);
 				glm::vec3 rotation(rx, ry, rz);
 				glm::vec3 scale(sx, sy, sz);
-				entities.push_back({meshIndex, translation, rotation, scale});
+				entities.push_back({meshIndex, translation, rotation, scale, side});
 				break;
 			}
 

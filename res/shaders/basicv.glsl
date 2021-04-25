@@ -5,6 +5,7 @@ layout(location = 2) in vec3 vertexNormals;
 
 out vec2 uvs;
 out vec3 normals;
+out vec3 fragPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -12,7 +13,10 @@ uniform mat4 projection;
 
 void main()
 {
-	normals = vec3(transpose(inverse(model)) * vec4(vertexNormals, 1.0));
+	vec4 fragPosTemp = view * model * vec4(vertexPos, 1.0);
+	gl_Position = projection * fragPosTemp;
+
 	uvs = vertexUV;
-	gl_Position = projection * view * model * vec4(vertexPos, 1.0);
+	fragPos = fragPosTemp.xyz;
+	normals = vec3(transpose(inverse(model)) * vec4(vertexNormals, 1.0));
 }
