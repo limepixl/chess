@@ -19,7 +19,8 @@ Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 	rewind(vertexRaw);
 
 	char *buffer = new char[size+1];
-	fread(buffer, size * sizeof(char), 1, vertexRaw);
+	if(!fread(buffer, size * sizeof(char), 1, vertexRaw))
+		printf("ERROR: FILE\n");
 	buffer[size] = '\0';
 	fclose(vertexRaw);
 
@@ -48,7 +49,8 @@ Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 	rewind(fragmentRaw);
 
 	buffer = new char[size+1];
-	fread(buffer, size * sizeof(char), 1, fragmentRaw);
+	if(!fread(buffer, size * sizeof(char), 1, fragmentRaw))
+		printf("ERROR: FILE\n");
 	buffer[size] = '\0';
 	fclose(fragmentRaw);
 
@@ -104,7 +106,7 @@ Texture LoadTextureFromFile(const char *path)
 	if(!data)
 	{
 		printf("Failed to load texture from: %s\n", path);
-		return {0};
+		return {};
 	}
 
 	int index = Texture::numTexturesLoaded++;
@@ -157,10 +159,12 @@ Mesh LoadMesh(const char *path)
 	glGenBuffers(3, VBO);
 
 	int numVertices, numUVs, numNormals;
-	fscanf(binary, "%d %d %d\n", &numVertices, &numUVs, &numNormals);
+	if(fscanf(binary, "%d %d %d\n", &numVertices, &numUVs, &numNormals) == EOF)
+		printf("ERROR: FILE\n");
 
 	float *buffer = new float[numVertices];
-	fread(buffer, sizeof(float), numVertices, binary);
+	if(!fread(buffer, sizeof(float), numVertices, binary))
+		printf("ERROR: FILE\n");
 	vertices = std::vector<float>(buffer, buffer + numVertices);
 	delete[] buffer;
 
@@ -173,7 +177,8 @@ Mesh LoadMesh(const char *path)
 	if(numUVs != 0)
 	{
 		buffer = new float[numUVs];
-		fread(buffer, sizeof(float), numUVs, binary);
+		if(!fread(buffer, sizeof(float), numUVs, binary))
+			printf("ERROR: FILE\n");
 		uvs = std::vector<float>(buffer, buffer + numUVs);
 		delete[] buffer;
 
@@ -187,7 +192,8 @@ Mesh LoadMesh(const char *path)
 	if(numNormals != 0)
 	{
 		buffer = new float[numNormals];
-		fread(buffer, sizeof(float), numNormals, binary);
+		if(!fread(buffer, sizeof(float), numNormals, binary))
+			printf("ERROR: FILE\n");
 		normals = std::vector<float>(buffer, buffer + numNormals);
 		delete[] buffer;
 
@@ -328,7 +334,8 @@ Scene LoadSceneFromFile(const char *path)
 			case 'm':
 			{
 				char meshName[100];
-				fscanf(sceneRaw, " %s\n", meshName);
+				if(fscanf(sceneRaw, " %s\n", meshName) == EOF)
+					printf("ERROR: FILE\n");
 
 				char tmp[100] = "res/models/";
 				meshes.push_back(LoadMesh(strcat(tmp, meshName)));
@@ -342,8 +349,9 @@ Scene LoadSceneFromFile(const char *path)
 				float rx, ry, rz;
 				float sx, sy, sz;
 				int side;
-				fscanf(sceneRaw, " %d %f %f %f %f %f %f %f %f %f %d\n", &meshIndex, &tx, &ty, &tz, &rx, &ry, &rz, &sx, &sy, &sz, &side);
-
+				if(fscanf(sceneRaw, " %d %f %f %f %f %f %f %f %f %f %d\n", &meshIndex, &tx, &ty, &tz, &rx, &ry, &rz, &sx, &sy, &sz, &side)
+					== EOF)
+					printf("ERROR: FILE\n");
 				glm::vec3 translation(tx, ty, tz);
 				glm::vec3 rotation(rx, ry, rz);
 				glm::vec3 scale(sx, sy, sz);

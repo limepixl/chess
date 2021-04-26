@@ -22,6 +22,21 @@ add_executable(
 	thirdparty/stb_image/stb_image.c)
 
 if(WIN32)
-	target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
-	target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/SDL2-staticd.lib Setupapi.lib Winmm.lib Imm32.lib Version.lib)
+	if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+		set(LIBS "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/SDL2-staticd.lib Setupapi.lib Winmm.lib Imm32.lib Version.lib")
+	elseif(CMAKE_BUILD_TYPE EQUAL "RELEASE")
+		set(LIBS "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/SDL2-static.lib Setupapi.lib Winmm.lib Imm32.lib Version.lib")
+	endif()
+
+	SET(CMAKE_CXX_FLAGS "/W4 /D_CRT_SECURE_NO_WARNINGS")
+	target_link_libraries(${PROJECT_NAME} ${LIBS})
+elseif(UNIX)
+	if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+		set(LIBS "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2d.a pthread dl")
+	elseif(CMAKE_BUILD_TYPE EQUAL "RELEASE")
+		set(LIBS "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2.a pthread dl")
+	endif()
+
+	SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
+	target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2d.a pthread dl)
 endif()

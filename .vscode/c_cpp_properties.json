@@ -20,6 +20,22 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-msvc-x64"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/*",
+                "${workspaceFolder}/thirdparty/SDL2/include",
+                "${workspaceFolder}/thirdparty/glad/include",
+                "${workspaceFolder}/thirdparty/glm/",
+                "${workspaceFolder}/thirdparty/tinyobjloader",
+                "${workspaceFolder}/thirdparty/stb_image"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4
