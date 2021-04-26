@@ -137,6 +137,76 @@ Texture LoadTextureFromFile(const char *path)
 	return {ID, index, width, height, channels};
 }
 
+Mesh LoadMesh(const char *path)
+{
+	std::string binaryFile(path);
+	binaryFile += ".bin";
+	FILE *binary = fopen(binaryFile.c_str(), "rb");
+	if(!binary)
+	{
+		return LoadMeshFromOBJ(path);
+	}
+
+	std::vector<float> vertices, uvs, normals;
+
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	unsigned int VBO[3];
+	glGenBuffers(3, VBO);
+
+	int numVertices, numUVs, numNormals;
+	fscanf(binary, "%d %d %d\n", &numVertices, &numUVs, &numNormals);
+
+	float *buffer = new float[numVertices];
+	fread(buffer, sizeof(float), numVertices, binary);
+	vertices = std::vector<float>(buffer, buffer + numVertices);
+	delete[] buffer;
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+	if(numUVs != 0)
+	{
+		buffer = new float[numUVs];
+		fread(buffer, sizeof(float), numUVs, binary);
+		uvs = std::vector<float>(buffer, buffer + numUVs);
+		delete[] buffer;
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+		glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(float), uvs.data(), GL_STATIC_DRAW);
+		
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
+	}
+
+	if(numNormals != 0)
+	{
+		buffer = new float[numNormals];
+		fread(buffer, sizeof(float), numNormals, binary);
+		normals = std::vector<float>(buffer, buffer + numNormals);
+		delete[] buffer;
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	}
+
+	fclose(binary);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	printf("Loaded mesh from cache: %s\nVertex count: %d\n", path, (int)vertices.size());
+	return {VAO, {VBO[0], VBO[1], VBO[2]}, vertices.size()};
+}
+
 Mesh LoadMeshFromOBJ(const char *path)
 {
 	tinyobj::attrib_t attrib;
@@ -219,7 +289,23 @@ Mesh LoadMeshFromOBJ(const char *path)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	printf("Loaded mesh: %s\nTriangle count: %d\n", shapes[0].name.c_str(), (int)finalVertices.size() / 3);
+	// Make cache
+	std::string binaryPath(path);
+	binaryPath += ".bin";
+	FILE *binary = fopen(binaryPath.c_str(), "wb");
+
+	fprintf(binary, "%lu %lu %lu\n", (unsigned long)finalVertices.size(), (unsigned long)finalUVs.size(), (unsigned long)finalNormals.size());
+	fwrite(finalVertices.data(), sizeof(float), finalVertices.size(), binary);
+
+	if(uvs.size() != 0)
+		fwrite(finalUVs.data(), sizeof(float), finalUVs.size(), binary);
+
+	if(normals.size() != 0)
+		fwrite(finalNormals.data(), sizeof(float), finalNormals.size(), binary);
+
+	fclose(binary);
+
+	printf("Loaded mesh: %s\nVertex count: %d\n", shapes[0].name.c_str(), (int)finalVertices.size());
 	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size()};
 }
 
@@ -245,7 +331,7 @@ Scene LoadSceneFromFile(const char *path)
 				fscanf(sceneRaw, " %s\n", meshName);
 
 				char tmp[100] = "res/models/";
-				meshes.push_back(LoadMeshFromOBJ(strcat(tmp, meshName)));
+				meshes.push_back(LoadMesh(strcat(tmp, meshName)));
 				break;
 			}
 

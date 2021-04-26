@@ -20,7 +20,7 @@ int main()
 
 	Shader texturedShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/texturef.glsl");
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
-	Mesh board = LoadMeshFromOBJ("res/models/board.obj");
+	Mesh board = LoadMesh("res/models/board.obj");
 	
 	Scene scene = LoadSceneFromFile("res/scenes/default.txt");
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
