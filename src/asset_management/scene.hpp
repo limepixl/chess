@@ -1,12 +1,15 @@
 #pragma once
 #include <vector>
 #include <glm/vec3.hpp>
+#include "../math/math.hpp"
 
 struct Mesh
 {
 	unsigned int VAO;
 	unsigned int VBOs[3];
 	size_t numVertices;
+	struct AABB boundingBox;
+	unsigned int AABB_VAO;
 };
 
 
@@ -26,3 +29,4 @@ struct Scene
 };
 
 void DrawScene(Scene *scene, struct Shader *shader);
+void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, struct Shader *shader);

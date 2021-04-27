@@ -4,6 +4,7 @@
 		"vector": "cpp",
 		"unordered_map": "cpp",
 		"cstdlib": "cpp",
-		"cmath": "cpp"
+		"cmath": "cpp",
+		"*.tcc": "cpp"
 	}
 }

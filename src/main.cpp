@@ -43,6 +43,8 @@ int main()
 	float xRotate = 0.0f;
 	float zRotate = 0.0f;
 
+	Shader outlineShader = LoadShadersFromFiles("res/shaders/outlinev.glsl", "res/shaders/outlinef.glsl");
+
 	while(true)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -107,6 +109,14 @@ int main()
 		glBindVertexArray(board.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, (int)board.numVertices);
 		glBindVertexArray(0);
+
+		// DRAW OUTLINE (TEMP)
+		glUseProgram(outlineShader.ID);
+		glUniformMatrix4fv(outlineShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
+		glUniformMatrix4fv(outlineShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
+
+		DrawAABBs(scene.entities, scene.meshes, &outlineShader);
+		// DRAW OUTLINE (TEMP)
 
 		SDL_GL_SwapWindow(display.window);
 	}

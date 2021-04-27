@@ -6,6 +6,78 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include <vector>
+#include "../math/math.hpp"
+
+void PrepareAABBForRendering(AABB aabb, unsigned int *VAO)
+{
+	float x1 = aabb.p1.x;
+	float x2 = aabb.p2.x;
+	float y1 = aabb.p1.y;
+	float y2 = aabb.p2.y;
+	float z1 = aabb.p1.z;
+	float z2 = aabb.p2.z;
+
+	float vertices[]
+	{
+		// front
+		x1, y1, z2,
+		x2, y1, z2,
+		x2, y2, z2,
+		x2, y2, z2,
+		x1, y2, z2,
+		x1, y1, z2,
+
+		// left
+		x2, y1, z2,
+		x2, y1, z1,
+		x2, y2, z1,
+		x2, y2, z1,
+		x2, y2, z2,
+		x2, y1, z2,
+
+		// right
+		x1, y1, z1,
+		x1, y1, z2,
+		x1, y2, z2,
+		x1, y2, z2,
+		x1, y2, z1,
+		x1, y1, z1,
+
+		// back
+		x2, y1, z1,
+		x1, y1, z1,
+		x1, y2, z1,
+		x1, y2, z1,
+		x2, y2, z1,
+		x2, y1, z1,
+
+		// top
+		x2, y2, z1,
+		x1, y2, z1,
+		x1, y2, z2,
+		x1, y2, z2,
+		x2, y2, z2,
+		x2, y2, z1,
+
+		// bottom
+		x1, y1, z1,
+		x2, y1, z1,
+		x2, y1, z2,
+		x2, y1, z2,
+		x1, y1, z2,
+		x1, y1, z1
+	};
+
+	glGenVertexArrays(1, VAO);
+	glBindVertexArray(*VAO);
+
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+}
 
 Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 {
@@ -209,8 +281,14 @@ Mesh LoadMesh(const char *path)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	AABB tmp = ComputeAABBFromVertices(vertices);
+	printf("Generated AABB with points:\n%.2f %.2f %.2f\n%.2f %.2f %.2f\n", tmp.p1[0], tmp.p1[1], tmp.p1[2], tmp.p2[0], tmp.p2[1], tmp.p2[2]);
+
+	unsigned int AABB_VAO;
+	PrepareAABBForRendering(tmp, &AABB_VAO);
+
 	printf("Loaded mesh from cache: %s\nVertex count: %d\n", path, (int)vertices.size());
-	return {VAO, {VBO[0], VBO[1], VBO[2]}, vertices.size()};
+	return {VAO, {VBO[0], VBO[1], VBO[2]}, vertices.size(), tmp, AABB_VAO};
 }
 
 Mesh LoadMeshFromOBJ(const char *path)
@@ -311,8 +389,14 @@ Mesh LoadMeshFromOBJ(const char *path)
 
 	fclose(binary);
 
+	AABB tmp = ComputeAABBFromVertices(finalVertices);
+	printf("Generated AABB with points:\n%.2f %.2f %.2f\n%.2f %.2f %.2f\n", tmp.p1[0], tmp.p1[1], tmp.p1[2], tmp.p2[0], tmp.p2[1], tmp.p2[2]);
+
+	unsigned int AABB_VAO;
+	PrepareAABBForRendering(tmp, &AABB_VAO);
+
 	printf("Loaded mesh: %s\nVertex count: %d\n", shapes[0].name.c_str(), (int)finalVertices.size());
-	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size()};
+	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size(), tmp, AABB_VAO};
 }
 
 Scene LoadSceneFromFile(const char *path)
