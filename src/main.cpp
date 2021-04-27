@@ -33,7 +33,7 @@ int main()
 
 	// Camera stuff
 	// TODO: abstract away somewhere
-	glm::vec3 cameraPos = glm::vec3(0.0f, 30.0f, 50.0f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 45.0f, 40.0f);
 	glm::vec3 destination(0.0f, 0.0f, 0.0f);
 	glm::vec3 dir = destination - cameraPos;
 	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
@@ -72,16 +72,16 @@ int main()
 				zRotate = amount;
 				xRotate = amount;
 			}
-			cameraPos.z = 50.0f * cos(zRotate);
+			cameraPos.z = 40.0f * cos(zRotate);
 			cameraPos.x = 40.0f * sin(xRotate);
 
 			glm::vec3 dir = destination - cameraPos;
 			glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
 			glm::vec3 up = glm::cross(dir, right);
 			view = glm::lookAt(cameraPos, destination, up);
-			t += 0.01f;
+			t += 0.05f;
 
-			if(t >= 1.0f)
+			if(t >= 1.05f)
 			{
 				printf("Switched!\n");
 				state.shouldRotate = false;
