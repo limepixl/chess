@@ -14,3 +14,5 @@ struct AABB
 };
 
 AABB ComputeAABBFromVertices(std::vector<float>& vertices);
+
+void CastRay(struct Display *display, glm::mat4 &projection, glm::mat4 &view);

@@ -2,8 +2,10 @@
 #include "../display/display.hpp"
 #include <glad/glad.h>
 #include <SDL.h>
+#include <cstdio>
+#include "../math/math.hpp"
 
-void ProcessEvents(Display *display, State *state)
+void ProcessEvents(Display *display, State *state, glm::mat4 &view)
 {
 	SDL_Event e;
 	while(SDL_PollEvent(&e))
@@ -46,6 +48,18 @@ void ProcessEvents(Display *display, State *state)
 
 				default:
 				{
+					break;
+				}
+			}
+		}
+		else if(e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			switch(e.button.button)
+			{
+				case SDL_BUTTON_LEFT:
+				{
+					state->shouldCastRay = true;
+					
 					break;
 				}
 			}

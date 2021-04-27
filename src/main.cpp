@@ -49,7 +49,7 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		ProcessEvents(&display, &state);
+		ProcessEvents(&display, &state, view);
 
 		glUseProgram(shader.ID);
 		if(display.changedSize)
@@ -117,6 +117,13 @@ int main()
 
 		DrawAABBs(scene.entities, scene.meshes, &outlineShader);
 		// DRAW OUTLINE (TEMP)
+
+		if(state.shouldCastRay)
+		{
+			state.shouldCastRay = false;
+
+			CastRay(&display, projection, view);
+		}
 
 		SDL_GL_SwapWindow(display.window);
 	}
