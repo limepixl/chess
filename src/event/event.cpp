@@ -5,7 +5,7 @@
 #include <cstdio>
 #include "../math/math.hpp"
 
-void ProcessEvents(Display *display, State *state, glm::mat4 &view)
+void ProcessEvents(Display *display, State *state)
 {
 	SDL_Event e;
 	while(SDL_PollEvent(&e))

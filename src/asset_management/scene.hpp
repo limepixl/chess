@@ -12,7 +12,6 @@ struct Mesh
 	unsigned int AABB_VAO;
 };
 
-
 struct Entity
 {
 	int meshIndex;
@@ -28,5 +27,7 @@ struct Scene
 	std::vector<Entity> entities;
 };
 
-void DrawScene(Scene *scene, struct Shader *shader);
+void DrawScene(Scene *scene, struct Shader *shader, struct State *state);
 void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, struct Shader *shader);
+
+bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entities, Entity **hit);

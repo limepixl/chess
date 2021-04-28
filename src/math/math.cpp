@@ -35,7 +35,7 @@ AABB ComputeAABBFromVertices(std::vector<float>& vertices)
 	return {min, max};
 }
 
-void CastRay(Display *display, glm::mat4 &projection, glm::mat4 &view)
+glm::vec3 CastRay(Display *display, glm::mat4 &projection, glm::mat4 &view)
 {
 	int xtmp, ytmp;
 	SDL_GetMouseState(&xtmp, &ytmp);
@@ -55,6 +55,7 @@ void CastRay(Display *display, glm::mat4 &projection, glm::mat4 &view)
 	rayCam.w = 0.0f;
 
 	// World coordinates
-	glm::vec3 rayWorld = glm::vec3(glm::inverse(view) * rayCam);
-	rayWorld = glm::normalize(rayWorld);
+	rayCam = glm::inverse(view) * rayCam;
+	glm::vec3 rayWorld(rayCam.x, rayCam.y, rayCam.z);
+	return glm::normalize(rayWorld);
 }

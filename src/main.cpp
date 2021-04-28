@@ -26,7 +26,7 @@ int main()
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
 	glUseProgram(shader.ID);
 
-	State state{0, false};
+	State state{0, false, false, NULL};
 
 	glm::mat4 projection = GetProjectionMatrix(&display);
 	glUniformMatrix4fv(shader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
@@ -49,7 +49,7 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		ProcessEvents(&display, &state, view);
+		ProcessEvents(&display, &state);
 
 		glUseProgram(shader.ID);
 		if(display.changedSize)
@@ -92,7 +92,7 @@ int main()
 		}
 
 		glUniformMatrix4fv(shader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
-		DrawScene(&scene, &shader);
+		DrawScene(&scene, &shader, &state);
 
 		glUseProgram(texturedShader.ID);
 		glUniformMatrix4fv(texturedShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
@@ -111,18 +111,31 @@ int main()
 		glBindVertexArray(0);
 
 		// DRAW OUTLINE (TEMP)
+		#ifdef AABB
 		glUseProgram(outlineShader.ID);
 		glUniformMatrix4fv(outlineShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
 		glUniformMatrix4fv(outlineShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
 
 		DrawAABBs(scene.entities, scene.meshes, &outlineShader);
 		// DRAW OUTLINE (TEMP)
+		#endif
 
 		if(state.shouldCastRay)
 		{
 			state.shouldCastRay = false;
 
-			CastRay(&display, projection, view);
+			glm::vec3 rayWorld = CastRay(&display, projection, view);
+
+			Entity *hitEntity = NULL;
+			bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
+			if(hit)
+			{
+				state.selectedEntity = hitEntity;
+			}
+			else
+			{
+				state.selectedEntity = NULL;
+			}
 		}
 
 		SDL_GL_SwapWindow(display.window);

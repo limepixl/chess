@@ -281,10 +281,8 @@ Mesh LoadMesh(const char *path)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	AABB tmp = ComputeAABBFromVertices(vertices);
-	printf("Generated AABB with points:\n%.2f %.2f %.2f\n%.2f %.2f %.2f\n", tmp.p1[0], tmp.p1[1], tmp.p1[2], tmp.p2[0], tmp.p2[1], tmp.p2[2]);
-
 	unsigned int AABB_VAO;
+	AABB tmp = ComputeAABBFromVertices(vertices);
 	PrepareAABBForRendering(tmp, &AABB_VAO);
 
 	printf("Loaded mesh from cache: %s\nVertex count: %d\n", path, (int)vertices.size());
@@ -389,10 +387,8 @@ Mesh LoadMeshFromOBJ(const char *path)
 
 	fclose(binary);
 
-	AABB tmp = ComputeAABBFromVertices(finalVertices);
-	printf("Generated AABB with points:\n%.2f %.2f %.2f\n%.2f %.2f %.2f\n", tmp.p1[0], tmp.p1[1], tmp.p1[2], tmp.p2[0], tmp.p2[1], tmp.p2[2]);
-
 	unsigned int AABB_VAO;
+	AABB tmp = ComputeAABBFromVertices(finalVertices);
 	PrepareAABBForRendering(tmp, &AABB_VAO);
 
 	printf("Loaded mesh: %s\nVertex count: %d\n", shapes[0].name.c_str(), (int)finalVertices.size());
