@@ -1,4 +1,4 @@
-- Mouse picking of meshes
+- Delay to achieve max 60fps
 - Outline when selected
 - Highlight possible moves
 - Simple circular shadow
