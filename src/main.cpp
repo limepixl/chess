@@ -44,6 +44,7 @@ int main()
 	float zRotate = 0.0f;
 
 	Shader outlineShader = LoadShadersFromFiles("res/shaders/outlinev.glsl", "res/shaders/outlinef.glsl");
+	Shader ghostShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/ghostf.glsl");
 
 	while(true)
 	{
@@ -92,7 +93,7 @@ int main()
 		}
 
 		glUniformMatrix4fv(shader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
-		DrawScene(&scene, &shader, &state);
+		DrawScene(&scene, &shader, &ghostShader, &state);
 
 		glUseProgram(texturedShader.ID);
 		glUniformMatrix4fv(texturedShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
@@ -109,6 +110,11 @@ int main()
 		glBindVertexArray(board.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, (int)board.numVertices);
 		glBindVertexArray(0);
+
+		// Update ghost matrices
+		glUseProgram(ghostShader.ID);
+		glUniformMatrix4fv(ghostShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
+		glUniformMatrix4fv(ghostShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
 
 		// DRAW OUTLINE (TEMP)
 		#ifdef AABB
@@ -131,10 +137,19 @@ int main()
 			if(hit)
 			{
 				state.selectedEntity = hitEntity;
+
+				// If there are highlights, clear them
+				if(scene.ghosts.size() > 0)
+					scene.ghosts.clear();
+				
+				// TODO: abstract away into function
+				GenerateGhostsOnGrid(&state, &scene);
 			}
 			else
 			{
 				state.selectedEntity = NULL;
+				if(scene.ghosts.size() > 0)
+					scene.ghosts.clear();
 			}
 		}
 

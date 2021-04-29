@@ -407,6 +407,9 @@ Scene LoadSceneFromFile(const char *path, State *state)
 	std::vector<Mesh> meshes;
 	std::vector<Entity> entities;
 
+	for(int i = 0; i < 64; i++)
+		state->grid[i] = 0; // empty
+
 	char lineType;
 	while((lineType = (char)fgetc(sceneRaw)) != EOF)
 	{
@@ -436,6 +439,8 @@ Scene LoadSceneFromFile(const char *path, State *state)
 				glm::vec3 translation(tx, ty, tz);
 				glm::vec3 rotation(rx, ry, rz);
 				glm::vec3 scale(sx, sy, sz);
+				
+				meshIndex++;
 				entities.push_back({meshIndex, translation, rotation, scale, side});
 
 				int x = int(tx / 5.0f);

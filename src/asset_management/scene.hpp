@@ -25,9 +25,12 @@ struct Scene
 {
 	std::vector<Mesh> meshes;
 	std::vector<Entity> entities;
+	std::vector<Entity> ghosts;
 };
 
-void DrawScene(Scene *scene, struct Shader *shader, struct State *state);
+void DrawScene(Scene *scene, struct Shader *shader, struct Shader *ghostShader, struct State *state);
 void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, struct Shader *shader);
 
 bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entities, Entity **hit);
+
+void GenerateGhostsOnGrid(struct State *state, Scene *scene);

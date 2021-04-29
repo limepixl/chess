@@ -4,8 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "../event/event.hpp"
 
-void DrawScene(Scene *scene, Shader *shader, State *state)
+void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 {
+	// Draw all actual pieces
 	for(size_t i = 0; i < scene->entities.size(); i++)
 	{
 		Entity* current = &scene->entities[i];
@@ -23,11 +24,11 @@ void DrawScene(Scene *scene, Shader *shader, State *state)
 		glUniformMatrix4fv(shader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
 		
 		glm::vec3 col(-1.0f, -1.0f, -1.0f);
-		if(current->side == 0) // white
+		if(current->side == 1) // white
 		{
 			col = glm::vec3(1.0f, 1.0f, 1.0f);
 		}
-		else if(current->side == 1) // black
+		else if(current->side == 0) // black
 		{
 			col = glm::vec3(0.3f, 0.3f, 0.3f);
 		}
@@ -38,11 +39,51 @@ void DrawScene(Scene *scene, Shader *shader, State *state)
 		
 		glUniform3fv(shader->uniforms["col"], 1, &col[0]);
 
-		Mesh currentMesh = scene->meshes[current->meshIndex];
+		Mesh currentMesh = scene->meshes[current->meshIndex - 1];
 		glBindVertexArray(currentMesh.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, (int)currentMesh.numVertices);
 		glBindVertexArray(0);
 	}
+
+	// For all ghosts
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+	glUseProgram(ghostShader->ID);
+	for(size_t i = 0; i < scene->ghosts.size(); i++)
+	{
+		Entity* current = &scene->ghosts[i];
+		glm::vec3 translation = current->position;
+		glm::vec3 rotation = current->rotation;
+		glm::vec3 scale = current->scale * 1.2f;
+
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, translation);
+		model = glm::rotate(model, glm::radians(rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, scale);
+
+		glUniformMatrix4fv(ghostShader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
+		
+		glm::vec3 col(-1.0f, -1.0f, -1.0f);
+		if(current->side == 1) // white
+		{
+			col = glm::vec3(1.0f, 1.0f, 1.0f);
+		}
+		else if(current->side == 0) // black
+		{
+			col = glm::vec3(0.3f, 0.3f, 0.3f);
+		}
+		
+		glUniform3fv(ghostShader->uniforms["col"], 1, &col[0]);
+
+		Mesh currentMesh = scene->meshes[current->meshIndex - 1];
+		glBindVertexArray(currentMesh.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, (int)currentMesh.numVertices);
+		glBindVertexArray(0);
+	}
+	glUseProgram(shader->ID);
+	glDisable(GL_BLEND);
 }
 
 void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, Shader *shader)
@@ -102,4 +143,96 @@ bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entiti
 		return true;
 
 	return false;
+}
+
+static inline void AddToVector(std::vector<Entity> &ghosts, Entity *hitEntity, const glm::vec3 &pos)
+{
+	Entity tmp{hitEntity->meshIndex, pos, hitEntity->rotation, hitEntity->scale, hitEntity->side};
+	ghosts.push_back(tmp);
+}
+
+void GenerateGhostsOnGrid(State *state, Scene *scene)
+{
+	int selectedX = int(state->selectedEntity->position.x / 5.0f);
+	int selectedY = int(state->selectedEntity->position.z / 5.0f);
+	bool currentWhite = state->grid[selectedX + selectedY * 8] > 0;
+	int *grid = state->grid;
+	std::vector<Entity> &ghosts = scene->ghosts;
+	Entity *selectedEntity = state->selectedEntity;
+
+	switch(state->selectedEntity->meshIndex)
+	{
+	case 1: // rook
+	{
+		// left
+		for(int i = selectedX - 1; i >= 0; i--)
+		{
+			int index = i + selectedY * 8;
+			bool white = grid[index] > 0;
+
+			if(grid[index] == 0)
+				AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+			if(grid[index] != 0)
+			{
+				if(white != currentWhite)
+					AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+				
+				break;
+			}
+		}
+
+		// right
+		for(int i = selectedX + 1; i < 8; i++)
+		{
+			int index = i + selectedY * 8;
+			bool white = grid[index] > 0;
+
+			if(grid[index] == 0)
+				AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+			if(grid[index] != 0)
+			{
+				if(white != currentWhite)
+					AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+
+				break;
+			}
+		}
+
+		// down
+		for(int i = selectedY - 1; i >= 0; i--)
+		{
+			int index = selectedX + i * 8;
+			bool white = grid[index] > 0;
+
+			if(grid[index] == 0)
+				AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+			if(grid[index] != 0)
+			{
+				if(white != currentWhite)
+					AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+				
+				break;
+			}
+		}
+
+		// up
+		for(int i = selectedY + 1; i < 8; i++)
+		{
+			int index = selectedX + i * 8;
+			bool white = grid[index] > 0;
+
+			if(grid[index] == 0)
+				AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+			if(grid[index] != 0)
+			{
+				if(white != currentWhite)
+					AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+
+				break;
+			}
+		}
+
+		break;
+	}
+	}
 }
