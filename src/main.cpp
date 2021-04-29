@@ -26,15 +26,15 @@ int main()
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
 	glUseProgram(shader.ID);
 
-	State state{0, false, false, NULL};
+	State state{1, false, false, NULL};
 
 	glm::mat4 projection = GetProjectionMatrix(&display);
 	glUniformMatrix4fv(shader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
 
 	// Camera stuff
 	// TODO: abstract away somewhere
-	glm::vec3 cameraPos = glm::vec3(0.0f, 45.0f, 40.0f);
-	glm::vec3 destination(0.0f, 0.0f, 0.0f);
+	glm::vec3 cameraPos = glm::vec3(17.5f, 45.0f, -40.0f + 17.5f);
+	glm::vec3 destination(17.5f, 0.0f, 17.5f);
 	glm::vec3 dir = destination - cameraPos;
 	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
 	glm::vec3 up = glm::cross(dir, right);
@@ -74,8 +74,8 @@ int main()
 				zRotate = amount;
 				xRotate = amount;
 			}
-			cameraPos.z = 40.0f * cos(zRotate);
-			cameraPos.x = 40.0f * sin(xRotate);
+			cameraPos.z = 40.0f * cos(zRotate) + 17.5f;
+			cameraPos.x = (40.0f) * sin(xRotate) + 17.5f;
 
 			dir = destination - cameraPos;
 			right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
@@ -99,7 +99,7 @@ int main()
 		glUniformMatrix4fv(texturedShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(17.5f, -2.0f, 17.5f));
 		glUniformMatrix4fv(texturedShader.uniforms["model"], 1, GL_FALSE, &model[0][0]);
 
 		glUniform1i(texturedShader.uniforms["tex"], boardTexture.index);
