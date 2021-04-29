@@ -160,9 +160,9 @@ Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath)
 	char name[512];
 	for(int i = 0; i < numActiveUniforms; i++)
 	{
-		int len, size;
+		int len, s;
 		GLenum type;
-		glGetActiveUniform(ID, i, 512, &len, &size, &type, name);
+		glGetActiveUniform(ID, i, 512, &len, &s, &type, name);
 		uniforms[std::string(name)] = glGetUniformLocation(ID, name);
 	}
 
@@ -407,7 +407,7 @@ Scene LoadSceneFromFile(const char *path)
 	std::vector<Entity> entities;
 
 	char lineType;
-	while((lineType = fgetc(sceneRaw)) != EOF)
+	while((lineType = (char)fgetc(sceneRaw)) != EOF)
 	{
 		switch(lineType)
 		{

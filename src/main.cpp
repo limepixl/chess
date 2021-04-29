@@ -77,9 +77,9 @@ int main()
 			cameraPos.z = 40.0f * cos(zRotate);
 			cameraPos.x = 40.0f * sin(xRotate);
 
-			glm::vec3 dir = destination - cameraPos;
-			glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
-			glm::vec3 up = glm::cross(dir, right);
+			dir = destination - cameraPos;
+			right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
+			up = glm::cross(dir, right);
 			view = glm::lookAt(cameraPos, destination, up);
 			t += 0.05f;
 
