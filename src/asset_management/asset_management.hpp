@@ -8,4 +8,4 @@ Texture LoadTextureFromFile(const char *path);
 
 Mesh LoadMeshFromOBJ(const char *path);
 Mesh LoadMesh(const char *path);
-Scene LoadSceneFromFile(const char *path);
+Scene LoadSceneFromFile(const char *path, struct State *state);

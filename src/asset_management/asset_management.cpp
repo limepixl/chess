@@ -7,6 +7,7 @@
 #include <tiny_obj_loader.h>
 #include <vector>
 #include "../math/math.hpp"
+#include "../event/event.hpp"
 
 void PrepareAABBForRendering(AABB aabb, unsigned int *VAO)
 {
@@ -395,7 +396,7 @@ Mesh LoadMeshFromOBJ(const char *path)
 	return {VAO, {VBO[0], VBO[1], VBO[2]}, finalVertices.size(), tmp, AABB_VAO};
 }
 
-Scene LoadSceneFromFile(const char *path)
+Scene LoadSceneFromFile(const char *path, State *state)
 {
 	FILE *sceneRaw = fopen(path, "rb");
 	if(!sceneRaw)
@@ -436,6 +437,10 @@ Scene LoadSceneFromFile(const char *path)
 				glm::vec3 rotation(rx, ry, rz);
 				glm::vec3 scale(sx, sy, sz);
 				entities.push_back({meshIndex, translation, rotation, scale, side});
+
+				int x = int(tx / 5.0f);
+				int y = int(tz / 5.0f);
+				state->grid[x + y * 8] = (side == 1 ? meshIndex : -meshIndex);
 				break;
 			}
 

@@ -7,6 +7,8 @@ struct State
 	bool shouldRotate;
 	bool shouldCastRay;
 	struct Entity *selectedEntity;
+
+	int grid[64];
 };
 
 void ProcessEvents(struct Display *display, State *state);
