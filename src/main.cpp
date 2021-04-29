@@ -46,9 +46,16 @@ int main()
 	Shader outlineShader = LoadShadersFromFiles("res/shaders/outlinev.glsl", "res/shaders/outlinef.glsl");
 	Shader ghostShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/ghostf.glsl");
 
+	// Counters
+	Uint64 start, end;
+	double targetFPS = 1000.0 / 60.0;
+
 	while(true)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Start counting ms
+		start = SDL_GetPerformanceCounter();
 		
 		ProcessEvents(&display, &state);
 
@@ -154,6 +161,18 @@ int main()
 		}
 
 		SDL_GL_SwapWindow(display.window);
+
+		// End counting ms and calculate elapsed ms
+		end = SDL_GetPerformanceCounter();
+
+		float elapsed = (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+		if(elapsed < targetFPS)
+		{
+			SDL_Delay((Uint32)floor(targetFPS - elapsed));
+		}
+		end = SDL_GetPerformanceCounter();
+		elapsed = (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+		// printf("FPS: %.2f\n", 1000.0 / elapsed);
 	}
 
 	SDL_Quit();
