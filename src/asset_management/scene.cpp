@@ -166,70 +166,41 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 	case 1: // rook
 	{
 		// left
+		std::vector<glm::ivec2> positions1;
 		for(int i = selectedX - 1; i >= 0; i--)
-		{
-			int index = i + selectedY * 8;
-			bool white = grid[index] > 0;
+			positions1.emplace_back(i, selectedY);
 
-			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
-			if(grid[index] != 0)
-			{
-				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
-				
-				break;
-			}
-		}
-
-		// right
+		std::vector<glm::ivec2> positions2;
 		for(int i = selectedX + 1; i < 8; i++)
-		{
-			int index = i + selectedY * 8;
-			bool white = grid[index] > 0;
-
-			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
-			if(grid[index] != 0)
-			{
-				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
-
-				break;
-			}
-		}
+			positions2.emplace_back(i, selectedY);
 
 		// down
+		std::vector<glm::ivec2> positions3;
 		for(int i = selectedY - 1; i >= 0; i--)
-		{
-			int index = selectedX + i * 8;
-			bool white = grid[index] > 0;
-
-			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
-			if(grid[index] != 0)
-			{
-				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
-				
-				break;
-			}
-		}
+			positions3.emplace_back(selectedX, i);
 
 		// up
+		std::vector<glm::ivec2> positions4;
 		for(int i = selectedY + 1; i < 8; i++)
+			positions4.emplace_back(selectedX, i);
+
+		std::vector<std::vector<glm::ivec2>> positions {positions1, positions2, positions3, positions4};
+		for(auto &posVec : positions)
 		{
-			int index = selectedX + i * 8;
-			bool white = grid[index] > 0;
-
-			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
-			if(grid[index] != 0)
+			for(auto &pos : posVec)
 			{
-				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
+				int index = pos.x + pos.y * 8;
+				bool white = grid[index] > 0;
 
-				break;
+				if(grid[index] == 0)
+					AddToVector(ghosts, selectedEntity, pos);
+				if(grid[index] != 0)
+				{
+					if(white != currentWhite)
+						AddToVector(ghosts, selectedEntity, pos);
+
+					break;
+				}
 			}
 		}
 
