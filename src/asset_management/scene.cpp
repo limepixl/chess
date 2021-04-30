@@ -355,6 +355,46 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 			}
 		}
 	}
+	
+	case 6: // pawn
+	{
+		// TODO: En Passante not implemented
+
+		std::vector<glm::ivec2> possibleMoves;
+		int yOffset = selectedEntity->side == 1 ? 1 : -1;
+
+		int y = selectedY + yOffset;
+		int x1 = selectedX - 1;
+		int x2 = selectedX;
+		int x3 = selectedX + 1;
+		if(y < 8 && y >= 0)
+		{
+			// left
+			bool white = grid[x1 + y * 8] > 0;
+			bool empty = grid[x1 + y * 8] == 0;
+			if(x1 >= 0 && ((!empty && white != currentWhite)))
+				AddToVector(ghosts, selectedEntity, glm::ivec2(x1, y));
+
+			// forward
+			if(grid[x2 + y * 8] == 0)
+				AddToVector(ghosts, selectedEntity, glm::ivec2(x2, y));
+
+			// right
+			white = grid[x3 + y * 8] > 0;
+			empty = grid[x3 + y * 8] == 0;
+			if(x3 < 8 && ((!empty && white != currentWhite)))
+				AddToVector(ghosts, selectedEntity, glm::ivec2(x3, y));
+		}
+
+		// First move
+		y = selectedY + yOffset * 2;
+		if(y < 8 && y >= 0 && ((currentWhite && selectedY == 1) || (!currentWhite && selectedY == 6)))
+		{
+			// forward
+			if(grid[x2 + y * 8] == 0 && grid[x2 + (y - yOffset) * 8] == 0)
+				AddToVector(ghosts, selectedEntity, glm::ivec2(x2, y));
+		}
+	}
 	}
 
 }
