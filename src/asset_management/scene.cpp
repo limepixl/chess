@@ -295,6 +295,66 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 		}
 		break;
 	}
+	
+	case 5: // queen
+	{
+		std::vector<glm::ivec2> positions1;
+		std::vector<glm::ivec2> positionsDiag1;
+		std::vector<glm::ivec2> positionsDiag2;
+		for(int i = selectedX - 1; i >= 0; i--)
+		{
+			positions1.emplace_back(i, selectedY);
+			int yOffset = selectedX - i;
+			if(selectedY + yOffset < 8)
+				positionsDiag1.emplace_back(i, selectedY + yOffset);
+			if(selectedY - yOffset >= 0)
+				positionsDiag2.emplace_back(i, selectedY - yOffset);
+		}
+
+		std::vector<glm::ivec2> positions2;
+		std::vector<glm::ivec2> positionsDiag3;
+		std::vector<glm::ivec2> positionsDiag4;
+		for(int i = selectedX + 1; i < 8; i++)
+		{
+			positions2.emplace_back(i, selectedY);
+			int yOffset = i - selectedX;
+			if(selectedY + yOffset < 8)
+				positionsDiag3.emplace_back(i, selectedY + yOffset);
+			if(selectedY - yOffset >= 0)
+				positionsDiag4.emplace_back(i, selectedY - yOffset);
+		}
+
+		std::vector<glm::ivec2> positions3;
+		for(int i = selectedY - 1; i >= 0; i--)
+			positions3.emplace_back(selectedX, i);
+
+		std::vector<glm::ivec2> positions4;
+		for(int i = selectedY + 1; i < 8; i++)
+			positions4.emplace_back(selectedX, i);
+
+		std::vector<std::vector<glm::ivec2>> positions {positions1, positions2, positions3, 
+														positions4, positionsDiag1, positionsDiag2, 
+														positionsDiag3, positionsDiag4};
+
+		for(auto &posVec : positions)
+		{
+			for(auto &pos : posVec)
+			{
+				int index = pos.x + pos.y * 8;
+				bool white = grid[index] > 0;
+
+				if(grid[index] == 0)
+					AddToVector(ghosts, selectedEntity, pos);
+				else
+				{
+					if(white != currentWhite)
+						AddToVector(ghosts, selectedEntity, pos);
+
+					break;
+				}
+			}
+		}
+	}
 	}
 
 }
