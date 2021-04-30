@@ -8,3 +8,5 @@ struct Texture
 
 	static int numTexturesLoaded;
 };
+
+void BindTexture(Texture *tex);

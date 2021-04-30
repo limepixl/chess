@@ -101,6 +101,111 @@ void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, Shader 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State &state)
+{
+	bool hitGhost = false;
+	if(scene.ghosts.size() > 0)
+	{
+		// Check if hit any ghost and if so, move the piece there
+		Entity *ghostEntity = NULL;
+		hitGhost = RayHit(cameraPos, rayWorld, scene.ghosts, &ghostEntity);
+		if(hitGhost)
+		{
+			int selectedX = (int)(state.selectedEntity->position.x / 5.0f);
+			int selectedY = (int)(state.selectedEntity->position.z / 5.0f);
+			int newX = (int)(ghostEntity->position.x / 5.0f);
+			int newY = (int)(ghostEntity->position.z / 5.0f);
+			state.grid[newX + newY * 8] = state.grid[selectedX + selectedY * 8];
+			state.grid[selectedX + selectedY * 8] = 0;
+
+			printf("Current: %d %d\n", selectedX, selectedY);
+			printf("Eating: %d %d\n", newX, newY);
+
+			glm::vec3 newPos(newX * 5.0f, 0.0f, newY * 5.0f);
+			for(size_t i = 0; i < scene.entities.size(); i++)
+			{
+				Entity &piece = scene.entities[i];
+				if(piece.position == newPos)
+				{
+					printf("DELETING: %f %f %f\n", piece.position.x, piece.position.y, piece.position.z);
+					scene.entities.erase(scene.entities.begin() + i);
+					i--;
+					continue;
+				}
+				else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
+				{
+					state.selectedEntity = &piece;
+				}
+			}
+			state.selectedEntity->position = newPos;
+			state.turn = state.turn == 1 ? 0 : 1;
+			state.shouldRotate = true;
+
+			scene.ghosts.clear();
+			state.selectedEntity = NULL;
+		}
+	}
+
+	if(!hitGhost)
+	{
+		Entity *hitEntity = NULL;
+		bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
+		if(hit)
+		{
+			if(hitEntity->side == state.turn)
+			{
+				state.selectedEntity = hitEntity;
+
+				// If there are highlights, clear them
+				if (scene.ghosts.size() > 0)
+					scene.ghosts.clear();
+
+				GenerateGhostsOnGrid(&state, &scene);
+			}
+		}
+		else
+		{
+			state.selectedEntity = NULL;
+			scene.ghosts.clear();
+		}
+	}
+}
+
+void RotateBoard(State &state, Camera &cam)
+{
+	float &t = cam.t;
+	glm::vec3 &pos = cam.cameraPos;
+	glm::vec3 &dir = cam.dir;
+
+	if(state.turn == 1)
+	{
+		float amount = Lerp(0.0f, 3.141592f, t);
+		cam.zRotate = amount;
+		cam.xRotate = amount;
+	}
+	else
+	{
+		float amount = Lerp(3.141592f, 6.283084f, t);
+		cam.zRotate = amount;
+		cam.xRotate = amount;
+	}
+	pos.z = 40.0f * cos(cam.zRotate) + 17.5f;
+	pos.x = (40.0f) * sin(cam.xRotate) + 17.5f;
+
+	dir = cam.destination - pos;
+	cam.right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
+	cam.up = glm::cross(dir, cam.right);
+	cam.view = glm::lookAt(pos, cam.destination, cam.up);
+	t += 0.05f;
+
+	if (t >= 1.05f)
+	{
+		printf("Switched!\n");
+		state.shouldRotate = false;
+		t = 0.0f;
+	}
+}
+
 bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entities, Entity **hit)
 {
 	float tmin = 0.001f;

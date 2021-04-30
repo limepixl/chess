@@ -31,6 +31,20 @@ struct Scene
 void DrawScene(Scene *scene, struct Shader *shader, struct Shader *ghostShader, struct State *state);
 void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, struct Shader *shader);
 
-bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entities, Entity **hit);
+struct Camera
+{
+	glm::vec3 cameraPos;
+	glm::vec3 destination;
+	glm::vec3 dir;
+	glm::vec3 right;
+	glm::vec3 up;
+	glm::mat4 view;
+	float t = 0.0f;
+	float xRotate = 0.0f;
+	float zRotate = 0.0f;
+};
 
+void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, struct State &state);
+void RotateBoard(State &state, Camera &cam);
+bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entities, Entity **hit);
 void GenerateGhostsOnGrid(struct State *state, Scene *scene);

@@ -8,9 +8,6 @@
 #include "math/math.hpp"
 #include "event/event.hpp"
 
-// ew
-#include <algorithm>
-
 int Texture::numTexturesLoaded = 0;
 
 int main()
@@ -35,18 +32,14 @@ int main()
 	glUniformMatrix4fv(shader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
 
 	// Camera stuff
-	// TODO: abstract away somewhere
-	glm::vec3 cameraPos = glm::vec3(17.5f, 45.0f, 40.0f + 17.5f);
-	glm::vec3 destination(17.5f, 0.0f, 17.5f);
-	glm::vec3 dir = destination - cameraPos;
-	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
-	glm::vec3 up = glm::cross(dir, right);
-	glm::mat4 view = glm::lookAt(cameraPos, destination, up);
-	float t = 0.0f;
-	float xRotate = 0.0f;
-	float zRotate = 0.0f;
+	Camera camera;
+	camera.cameraPos = glm::vec3(17.5f, 45.0f, 40.0f + 17.5f);
+	camera.destination = glm::vec3(17.5f, 0.0f, 17.5f);
+	camera.dir = camera.destination - camera.cameraPos;
+	camera.right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), camera.dir);
+	camera.up = glm::cross(camera.dir, camera.right);
+	camera.view = glm::lookAt(camera.cameraPos, camera.destination, camera.up);
 
-	Shader outlineShader = LoadShadersFromFiles("res/shaders/outlinev.glsl", "res/shaders/outlinef.glsl");
 	Shader ghostShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/ghostf.glsl");
 
 	// Counters
@@ -72,50 +65,21 @@ int main()
 		}
 
 		if(state.shouldRotate)
-		{
-			if(state.turn == 1)
-			{
-				float amount = Lerp(0.0f, 3.141592f, t);
-				zRotate = amount;
-				xRotate = amount;
-			}
-			else
-			{
-				float amount = Lerp(3.141592f, 6.283084f, t);
-				zRotate = amount;
-				xRotate = amount;
-			}
-			cameraPos.z = 40.0f * cos(zRotate) + 17.5f;
-			cameraPos.x = (40.0f) * sin(xRotate) + 17.5f;
+			RotateBoard(state, camera);
 
-			dir = destination - cameraPos;
-			right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);
-			up = glm::cross(dir, right);
-			view = glm::lookAt(cameraPos, destination, up);
-			t += 0.05f;
-
-			if(t >= 1.05f)
-			{
-				printf("Switched!\n");
-				state.shouldRotate = false;
-				t = 0.0f;
-			}
-		}
-
-		glUniformMatrix4fv(shader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
+		glUniformMatrix4fv(shader.uniforms["view"], 1, GL_FALSE, &camera.view[0][0]);
 		DrawScene(&scene, &shader, &ghostShader, &state);
 
 		glUseProgram(texturedShader.ID);
+		glUniformMatrix4fv(texturedShader.uniforms["view"], 1, GL_FALSE, &camera.view[0][0]);
 		glUniformMatrix4fv(texturedShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
-		glUniformMatrix4fv(texturedShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(17.5f, -2.0f, 17.5f));
 		glUniformMatrix4fv(texturedShader.uniforms["model"], 1, GL_FALSE, &model[0][0]);
 
 		glUniform1i(texturedShader.uniforms["tex"], boardTexture.index);
-		glActiveTexture(GL_TEXTURE0 + boardTexture.index);
-		glBindTexture(GL_TEXTURE_2D, boardTexture.ID);
+		BindTexture(&boardTexture);
 
 		glBindVertexArray(board.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, (int)board.numVertices);
@@ -123,91 +87,15 @@ int main()
 
 		// Update ghost matrices
 		glUseProgram(ghostShader.ID);
+		glUniformMatrix4fv(ghostShader.uniforms["view"], 1, GL_FALSE, &camera.view[0][0]);
 		glUniformMatrix4fv(ghostShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
-		glUniformMatrix4fv(ghostShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
-
-		// DRAW OUTLINE (TEMP)
-		#ifdef AABB
-		glUseProgram(outlineShader.ID);
-		glUniformMatrix4fv(outlineShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
-		glUniformMatrix4fv(outlineShader.uniforms["view"], 1, GL_FALSE, &view[0][0]);
-
-		DrawAABBs(scene.entities, scene.meshes, &outlineShader);
-		// DRAW OUTLINE (TEMP)
-		#endif
 
 		if(state.shouldCastRay)
 		{
 			state.shouldCastRay = false;
 
-			glm::vec3 rayWorld = CastRay(&display, projection, view);
-
-			bool hitGhost = false;
-			if(scene.ghosts.size() > 0)
-			{
-				// Check if hit any ghost and if so, move the piece there
-				Entity *ghostEntity = NULL;
-				hitGhost = RayHit(cameraPos, rayWorld, scene.ghosts, &ghostEntity);
-				if(hitGhost)
-				{
-					int selectedX = (int)(state.selectedEntity->position.x / 5.0f);
-					int selectedY = (int)(state.selectedEntity->position.z / 5.0f);
-					int newX = (int)(ghostEntity->position.x / 5.0f);
-					int newY = (int)(ghostEntity->position.z / 5.0f);
-					state.grid[newX + newY * 8] = state.grid[selectedX + selectedY * 8];
-					state.grid[selectedX + selectedY * 8] = 0;
-
-					printf("Current: %d %d\n", selectedX, selectedY);
-					printf("Eating: %d %d\n", newX, newY);
-
-					glm::vec3 newPos(newX * 5.0f, 0.0f, newY * 5.0f);
-					for(size_t i = 0; i < scene.entities.size(); i++)
-					{
-						Entity &piece = scene.entities[i];
-						if(piece.position == newPos)
-						{
-							printf("DELETING: %f %f %f\n", piece.position.x, piece.position.y, piece.position.z);
-							scene.entities.erase(scene.entities.begin() + i);
-							i--;
-							continue;
-						}
-						else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
-						{
-							state.selectedEntity = &piece;
-						}
-					}
-					state.selectedEntity->position = newPos;
-					state.turn = state.turn == 1 ? 0 : 1;
-					state.shouldRotate = true;
-
-					scene.ghosts.clear();
-					state.selectedEntity = NULL;
-				}
-			}
-			
-			if(!hitGhost)
-			{
-				Entity *hitEntity = NULL;
-				bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
-				if(hit)
-				{
-					if(hitEntity->side == state.turn)
-					{
-						state.selectedEntity = hitEntity;
-
-						// If there are highlights, clear them
-						if(scene.ghosts.size() > 0)
-							scene.ghosts.clear();
-					
-						GenerateGhostsOnGrid(&state, &scene);
-					}
-				}
-				else
-				{
-					state.selectedEntity = NULL;
-					scene.ghosts.clear();
-				}
-			}
+			glm::vec3 rayWorld = CastRay(&display, projection, camera.view);
+			UpdateBoard(rayWorld, camera.cameraPos, scene, state);
 		}
 
 		SDL_GL_SwapWindow(display.window);

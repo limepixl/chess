@@ -14,11 +14,13 @@ include_directories(
 add_executable(
 	chess 
 	src/main.cpp 
-	src/display/display.cpp
-	src/asset_management/asset_management.cpp
-	src/asset_management/scene.cpp
 	src/math/math.cpp
 	src/event/event.cpp
+	src/display/display.cpp
+	src/asset_management/scene.cpp
+	src/asset_management/texture.cpp
+	src/asset_management/asset_management.cpp
+	
 	thirdparty/glad/src/glad.c
 	thirdparty/stb_image/stb_image.c)
 
