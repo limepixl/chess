@@ -267,6 +267,41 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 
 	case 3: // bishop
 	{
+		std::vector<glm::ivec2> positions1;
+		for(int x = selectedX-1, y = selectedY+1; x >= 0 && y < 8; x--, y++)
+			positions1.emplace_back(x, y);
+
+		std::vector<glm::ivec2> positions2;
+		for(int x = selectedX+1, y = selectedY+1; x < 8 && y < 8; x++, y++)
+			positions2.emplace_back(x, y);
+
+		std::vector<glm::ivec2> positions3;
+		for(int x = selectedX-1, y = selectedY-1; x >= 0 && y >= 0; x--, y--)
+			positions3.emplace_back(x, y);
+
+		std::vector<glm::ivec2> positions4;
+		for(int x = selectedX+1, y = selectedY-1; x < 8 && y >= 0; x++, y--)
+			positions4.emplace_back(x, y);
+
+		std::vector<std::vector<glm::ivec2>> positions{positions1, positions2, positions3, positions4};
+		for(auto &posVec : positions)
+		{
+			for(auto &pos : posVec)
+			{
+				int x = pos.x;
+				int y = pos.y;
+				bool white = grid[x + y * 8] > 0;
+				if(grid[x + y * 8] == 0)
+					AddToVector(ghosts, selectedEntity, glm::ivec2(x, y));
+				else 
+				{
+					if(white != currentWhite)
+						AddToVector(ghosts, selectedEntity, glm::ivec2(x, y));
+						
+					break;
+				}
+			}
+		}
 
 		break;
 	}
