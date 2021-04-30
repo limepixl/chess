@@ -15,5 +15,5 @@ void main()
 	vec3 ambient = col * 0.1;
 	vec3 diffuse = col * diff;
 	color = vec4(ambient + diffuse, 1.0);
-	color.a = 0.2;
+	color.a = 0.3;
 }

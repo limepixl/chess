@@ -145,9 +145,10 @@ bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entiti
 	return false;
 }
 
-static inline void AddToVector(std::vector<Entity> &ghosts, Entity *hitEntity, const glm::vec3 &pos)
+static inline void AddToVector(std::vector<Entity> &ghosts, Entity *hitEntity, const glm::ivec2 &pos)
 {
-	Entity tmp{hitEntity->meshIndex, pos, hitEntity->rotation, hitEntity->scale, hitEntity->side};
+	glm::vec3 tmpPos(pos.x * 5.0f, 0.0f, pos.y * 5.0f);
+	Entity tmp{hitEntity->meshIndex, tmpPos, hitEntity->rotation, hitEntity->scale, hitEntity->side};
 	ghosts.push_back(tmp);
 }
 
@@ -171,11 +172,11 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 			bool white = grid[index] > 0;
 
 			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+				AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
 			if(grid[index] != 0)
 			{
 				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+					AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
 				
 				break;
 			}
@@ -188,11 +189,11 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 			bool white = grid[index] > 0;
 
 			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+				AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
 			if(grid[index] != 0)
 			{
 				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::vec3(i * 5.0f, 0.0f, selectedY * 5.0f));
+					AddToVector(ghosts, selectedEntity, glm::ivec2(i, selectedY));
 
 				break;
 			}
@@ -205,11 +206,11 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 			bool white = grid[index] > 0;
 
 			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+				AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
 			if(grid[index] != 0)
 			{
 				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+					AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
 				
 				break;
 			}
@@ -222,11 +223,11 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 			bool white = grid[index] > 0;
 
 			if(grid[index] == 0)
-				AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+				AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
 			if(grid[index] != 0)
 			{
 				if(white != currentWhite)
-					AddToVector(ghosts, selectedEntity, glm::vec3(selectedX * 5.0f, 0.0f, i * 5.0f));
+					AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX, i));
 
 				break;
 			}
@@ -234,5 +235,41 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 
 		break;
 	}
+
+	case 2: // knight
+	{
+		std::vector<glm::ivec2> possiblePos
+		{
+			{selectedX + 2, selectedY + 1},
+			{selectedX + 1, selectedY + 2},
+			{selectedX - 1, selectedY + 2},
+			{selectedX - 2, selectedY + 1},
+			{selectedX - 2, selectedY - 1},
+			{selectedX - 1, selectedY - 2},
+			{selectedX + 1, selectedY - 2},
+			{selectedX + 2, selectedY - 1}
+		};
+
+		for(glm::ivec2 &pos : possiblePos)
+		{
+			if(pos.x >= 0 && pos.y >= 0 && pos.x < 8 && pos.y < 8)
+			{
+				bool white = grid[pos.x + pos.y * 8] > 0;
+				if(currentWhite != white || grid[pos.x + pos.y * 8] == 0)
+				{
+					AddToVector(ghosts, selectedEntity, glm::ivec2(pos.x, pos.y));
+				}
+			}
+		}
+
+		break;
 	}
+
+	case 3: // bishop
+	{
+
+		break;
+	}
+	}
+
 }
