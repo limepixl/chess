@@ -8,6 +8,9 @@
 #include "math/math.hpp"
 #include "event/event.hpp"
 
+// ew
+#include <algorithm>
+
 int Texture::numTexturesLoaded = 0;
 
 int main()
@@ -139,24 +142,71 @@ int main()
 
 			glm::vec3 rayWorld = CastRay(&display, projection, view);
 
-			Entity *hitEntity = NULL;
-			bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
-			if(hit)
+			bool hitGhost = false;
+			if(scene.ghosts.size() > 0)
 			{
-				state.selectedEntity = hitEntity;
+				// Check if hit any ghost and if so, move the piece there
+				Entity *ghostEntity = NULL;
+				hitGhost = RayHit(cameraPos, rayWorld, scene.ghosts, &ghostEntity);
+				if(hitGhost)
+				{
+					int selectedX = (int)(state.selectedEntity->position.x / 5.0f);
+					int selectedY = (int)(state.selectedEntity->position.z / 5.0f);
+					int newX = (int)(ghostEntity->position.x / 5.0f);
+					int newY = (int)(ghostEntity->position.z / 5.0f);
+					state.grid[newX + newY * 8] = state.grid[selectedX + selectedY * 8];
+					state.grid[selectedX + selectedY * 8] = 0;
 
-				// If there are highlights, clear them
-				if(scene.ghosts.size() > 0)
+					printf("Current: %d %d\n", selectedX, selectedY);
+					printf("Eating: %d %d\n", newX, newY);
+
+					glm::vec3 newPos(newX * 5.0f, 0.0f, newY * 5.0f);
+					for(size_t i = 0; i < scene.entities.size(); i++)
+					{
+						Entity &piece = scene.entities[i];
+						if(piece.position == newPos)
+						{
+							printf("DELETING: %f %f %f\n", piece.position.x, piece.position.y, piece.position.z);
+							scene.entities.erase(scene.entities.begin() + i);
+							i--;
+							continue;
+						}
+						else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
+						{
+							state.selectedEntity = &piece;
+						}
+					}
+					state.selectedEntity->position = newPos;
+					state.turn = state.turn == 1 ? 0 : 1;
+					state.shouldRotate = true;
+
 					scene.ghosts.clear();
-				
-				// TODO: abstract away into function
-				GenerateGhostsOnGrid(&state, &scene);
+					state.selectedEntity = NULL;
+				}
 			}
-			else
+			
+			if(!hitGhost)
 			{
-				state.selectedEntity = NULL;
-				if(scene.ghosts.size() > 0)
+				Entity *hitEntity = NULL;
+				bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
+				if(hit)
+				{
+					if(hitEntity->side == state.turn)
+					{
+						state.selectedEntity = hitEntity;
+
+						// If there are highlights, clear them
+						if(scene.ghosts.size() > 0)
+							scene.ghosts.clear();
+					
+						GenerateGhostsOnGrid(&state, &scene);
+					}
+				}
+				else
+				{
+					state.selectedEntity = NULL;
 					scene.ghosts.clear();
+				}
 			}
 		}
 

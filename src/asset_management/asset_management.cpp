@@ -459,5 +459,5 @@ Scene LoadSceneFromFile(const char *path, State *state)
 
 	printf("Finished loading scene file: %s\n", path);
 	fclose(sceneRaw);
-	return {meshes, entities};
+	return {meshes, entities, {}};
 }

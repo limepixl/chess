@@ -24,11 +24,11 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 		glUniformMatrix4fv(shader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
 		
 		glm::vec3 col(-1.0f, -1.0f, -1.0f);
-		if(current->side == 1) // white
+		if(current->side == 0) // white
 		{
 			col = glm::vec3(1.0f, 1.0f, 1.0f);
 		}
-		else if(current->side == 0) // black
+		else if(current->side == 1) // black
 		{
 			col = glm::vec3(0.3f, 0.3f, 0.3f);
 		}
@@ -66,11 +66,11 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 		glUniformMatrix4fv(ghostShader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
 		
 		glm::vec3 col(-1.0f, -1.0f, -1.0f);
-		if(current->side == 1) // white
+		if(current->side == 0) // white
 		{
 			col = glm::vec3(1.0f, 1.0f, 1.0f);
 		}
-		else if(current->side == 0) // black
+		else if(current->side == 1) // black
 		{
 			col = glm::vec3(0.3f, 0.3f, 0.3f);
 		}
@@ -354,6 +354,8 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 				}
 			}
 		}
+
+		break;
 	}
 	
 	case 6: // pawn
@@ -361,7 +363,7 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 		// TODO: En Passante not implemented
 
 		std::vector<glm::ivec2> possibleMoves;
-		int yOffset = selectedEntity->side == 0 ? 1 : -1;
+		int yOffset = selectedEntity->side == 0 ? -1 : 1;
 
 		int y = selectedY + yOffset;
 		int x1 = selectedX - 1;
@@ -388,12 +390,14 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 
 		// First move
 		y = selectedY + yOffset * 2;
-		if(y < 8 && y >= 0 && ((currentWhite && selectedY == 1) || (!currentWhite && selectedY == 6)))
+		if(y < 8 && y >= 0 && ((currentWhite && selectedY == 6) || (!currentWhite && selectedY == 1)))
 		{
 			// forward
 			if(grid[x2 + y * 8] == 0 && grid[x2 + (y - yOffset) * 8] == 0)
 				AddToVector(ghosts, selectedEntity, glm::ivec2(x2, y));
 		}
+
+		break;
 	}
 	}
 

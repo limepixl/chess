@@ -3,7 +3,7 @@
 
 struct State
 {
-	int turn; // 1 for white 0 for black
+	int turn; // 0 for white 1 for black
 	bool shouldRotate;
 	bool shouldCastRay;
 	struct Entity *selectedEntity;
