@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14.7)
 project(chess)
 
 add_subdirectory(thirdparty/SDL2)
+set_target_properties(SDL2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(thirdparty/tinyobjloader)
 include_directories(
 	thirdparty/SDL2/include 
@@ -27,6 +28,8 @@ if(WIN32)
 	elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
 		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/SDL2.lib)
 	endif()
+
+	
 
 	target_link_libraries(${PROJECT_NAME} ${LIBS})
 	if(MSVC)
