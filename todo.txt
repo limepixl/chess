@@ -1,6 +1,4 @@
-- Delay to achieve max 60fps
-- Outline when selected
-- Highlight possible moves
+- Some cubemap
+- Specular highlight
 - Simple circular shadow
-- Cached meshes (bin file)
 - Stockfish implementation (optional)
