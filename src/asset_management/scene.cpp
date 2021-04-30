@@ -361,7 +361,7 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 		// TODO: En Passante not implemented
 
 		std::vector<glm::ivec2> possibleMoves;
-		int yOffset = selectedEntity->side == 1 ? 1 : -1;
+		int yOffset = selectedEntity->side == 0 ? 1 : -1;
 
 		int y = selectedY + yOffset;
 		int x1 = selectedX - 1;

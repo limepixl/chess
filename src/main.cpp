@@ -22,7 +22,7 @@ int main()
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
 	Mesh board = LoadMesh("res/models/board.obj");
 	
-	State state{1, false, false, NULL, {0}};
+	State state{0, false, false, NULL, {0}};
 
 	Scene scene = LoadSceneFromFile("res/scenes/default.txt", &state);
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
@@ -33,7 +33,7 @@ int main()
 
 	// Camera stuff
 	// TODO: abstract away somewhere
-	glm::vec3 cameraPos = glm::vec3(17.5f, 45.0f, -40.0f + 17.5f);
+	glm::vec3 cameraPos = glm::vec3(17.5f, 45.0f, 40.0f + 17.5f);
 	glm::vec3 destination(17.5f, 0.0f, 17.5f);
 	glm::vec3 dir = destination - cameraPos;
 	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), dir);

@@ -445,7 +445,7 @@ Scene LoadSceneFromFile(const char *path, State *state)
 
 				int x = int(tx / 5.0f);
 				int y = int(tz / 5.0f);
-				state->grid[x + y * 8] = (side == 1 ? meshIndex : -meshIndex);
+				state->grid[x + y * 8] = (side == 0 ? meshIndex : -meshIndex);
 				break;
 			}
 
