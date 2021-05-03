@@ -387,7 +387,11 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
 			{selectedX + 1, selectedY}, 
 			{selectedX, selectedY + 1}, 
 			{selectedX - 1, selectedY}, 
-			{selectedX, selectedY - 1}
+			{selectedX, selectedY - 1},
+			{selectedX + 1, selectedY + 1},
+			{selectedX + 1, selectedY - 1},
+			{selectedX - 1, selectedY + 1},
+			{selectedX - 1, selectedY - 1}
 		};
 		for(glm::ivec2 &pos : possibleMoves)
 		{

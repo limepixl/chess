@@ -27,7 +27,7 @@ add_executable(
 if(WIN32)
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
 		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/SDL2d.lib)
-	elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+	else(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
 		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/SDL2.lib)
 	endif()
 
@@ -43,7 +43,7 @@ if(WIN32)
 elseif(UNIX)
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
 		set(LIBS ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2d.a pthread dl)
-	elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+	else(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
 		set(LIBS ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2.a pthread dl)
 	endif()
 
