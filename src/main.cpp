@@ -46,6 +46,14 @@ int main()
 	Uint64 start, end;
 	double targetFPS = 1000.0 / 60.0;
 
+	// Set lightPos for all shaders
+	glUseProgram(shader.ID);
+	glUniform3f(shader.uniforms["lightPos"], 17.5f, 30.0f, 17.5f);
+	glUseProgram(texturedShader.ID);
+	glUniform3f(texturedShader.uniforms["lightPos"], 17.5f, 30.0f, 17.5f);
+	glUseProgram(ghostShader.ID);
+	glUniform3f(ghostShader.uniforms["lightPos"], 17.5f, 30.0f, 17.5f);
+
 	while(true)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -67,10 +75,12 @@ int main()
 		if(state.shouldRotate)
 			RotateBoard(state, camera);
 
+		glUniform3fv(shader.uniforms["viewPos"], 1, &camera.cameraPos[0]);
 		glUniformMatrix4fv(shader.uniforms["view"], 1, GL_FALSE, &camera.view[0][0]);
 		DrawScene(&scene, &shader, &ghostShader, &state);
 
 		glUseProgram(texturedShader.ID);
+		glUniform3fv(texturedShader.uniforms["viewPos"], 1, &camera.cameraPos[0]);
 		glUniformMatrix4fv(texturedShader.uniforms["view"], 1, GL_FALSE, &camera.view[0][0]);
 		glUniformMatrix4fv(texturedShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
 
@@ -87,6 +97,7 @@ int main()
 
 		// Update ghost matrices
 		glUseProgram(ghostShader.ID);
+		glUniform3fv(ghostShader.uniforms["viewPos"], 1, &camera.cameraPos[0]);
 		glUniformMatrix4fv(ghostShader.uniforms["view"], 1, GL_FALSE, &camera.view[0][0]);
 		glUniformMatrix4fv(ghostShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
 
