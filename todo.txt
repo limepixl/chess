@@ -1,4 +1,2 @@
 - Some cubemap
-- Specular highlight
-- Simple circular shadow
-- Stockfish implementation (optional)
+- Check
