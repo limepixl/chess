@@ -23,14 +23,19 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 
 		glUniformMatrix4fv(shader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
 		
+		glm::vec3 redTint(0.5f, 0.0f, 0.0f);
 		glm::vec3 col(-1.0f, -1.0f, -1.0f);
 		if(current->side == 0) // white
 		{
 			col = glm::vec3(1.0f, 1.0f, 1.0f);
+			if(current->meshIndex == 4 && state->whiteCheck)
+				col = glm::vec3(1.0f, 0.7f, 0.7f);
 		}
 		else if(current->side == 1) // black
 		{
 			col = glm::vec3(0.3f, 0.3f, 0.3f);
+			if(current->meshIndex == 4 && state->blackCheck)
+				col += redTint;
 		}
 
 		// If entity is selected, add highlight
@@ -101,6 +106,63 @@ void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, Shader 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+bool CheckForCheck(State *state, Scene *scene)
+{
+	int whiteX = -1, whiteY = -1;
+	int blackX = -1, blackY = -1;
+	for(int i = 0; i < 8; i++)
+	for(int j = 0; j < 8; j++)
+	{
+		// white king
+		if(state->grid[8*i + j] == 4)
+		{
+			whiteX = j;
+			whiteY = i;
+		}
+		// black king
+		else if(state->grid[8*i + j] == -4)
+		{
+			blackX = j;
+			blackY = i;
+		}
+	}
+
+	if(whiteX == -1 || whiteY == -1 || blackX == -1 || blackY == -1)
+		printf("ERROR: There is no king!\n");
+
+	for(Entity &entity : scene->entities)
+	{
+		// if king, skip
+		if(entity.meshIndex == 4)
+			continue;
+		
+		scene->ghosts.clear();
+		state->selectedEntity = &entity;
+		GenerateGhostsOnGrid(state, scene);
+		for(Entity &ghost : scene->ghosts)
+		{
+			int ghostX = int(ghost.position.x / 5.0f);
+			int ghostY = int(ghost.position.z / 5.0f);
+			if(ghostX == whiteX && ghostY == whiteY)
+			{
+				printf("WHITE KING UNDER ATTACK\n");
+				state->whiteCheck = true;
+				return true;
+			}
+			else if(ghostX == blackX && ghostY == blackY)
+			{
+				printf("BLACK KING UNDER ATTACK\n");
+				state->blackCheck = true;
+				return true;
+			}
+		}
+	}
+
+	state->whiteCheck = false;
+	state->blackCheck = false;
+	return false;
+}
+
 void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State &state)
 {
 	bool hitGhost = false;
@@ -115,6 +177,11 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 			int selectedY = (int)(state.selectedEntity->position.z / 5.0f);
 			int newX = (int)(ghostEntity->position.x / 5.0f);
 			int newY = (int)(ghostEntity->position.z / 5.0f);
+
+			State copyState = state;
+			Scene copyScene = scene;
+
+			// Update state grid
 			state.grid[newX + newY * 8] = state.grid[selectedX + selectedY * 8];
 			state.grid[selectedX + selectedY * 8] = 0;
 
@@ -141,6 +208,15 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 			state.turn = state.turn == 1 ? 0 : 1;
 			state.shouldRotate = true;
 
+			bool isCheck = CheckForCheck(&state, &scene);
+			// If, after the move, the king is [still] in check then don't apply the move
+			if((state.turn == 1 && state.whiteCheck) || (state.turn == 0 && state.blackCheck) ||
+				(copyState.whiteCheck && state.whiteCheck) || (copyState.blackCheck && state.blackCheck))
+			{
+				state = copyState;
+				scene = copyScene;
+			}
+			
 			scene.ghosts.clear();
 			state.selectedEntity = NULL;
 		}

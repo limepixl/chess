@@ -9,6 +9,9 @@ struct State
 	struct Entity *selectedEntity;
 
 	int grid[64];
+
+	bool whiteCheck = false;
+	bool blackCheck = false;
 };
 
 void ProcessEvents(struct Display *display, State *state);

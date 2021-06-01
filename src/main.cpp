@@ -16,7 +16,7 @@ int main()
 
 	int windowWidth = 1280;
 	int windowHeight = 720;
-	Display display = CreateDisplay("Chess - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);
+	Display display = CreateDisplay("Chess Titans - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);
 
 	Shader texturedShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/texturef.glsl");
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");

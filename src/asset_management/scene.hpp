@@ -19,6 +19,7 @@ struct Entity
 	glm::vec3 rotation;
 	glm::vec3 scale;
 	int side;
+	glm::vec3 tint;
 };
 
 struct Scene
