@@ -32,26 +32,6 @@ void ProcessEvents(Display *display, State *state)
 			SDL_Quit();
 			exit(0);
 		}
-		else if(e.type == SDL_KEYDOWN)
-		{
-			switch(e.key.keysym.sym)
-			{
-				case SDLK_SPACE:
-				{
-					if(state->shouldRotate == true)
-						break;
-						
-					state->turn = state->turn ? 0 : 1;
-					state->shouldRotate = true;
-					break;
-				}
-
-				default:
-				{
-					break;
-				}
-			}
-		}
 		else if(e.type == SDL_MOUSEBUTTONDOWN)
 		{
 			switch(e.button.button)
