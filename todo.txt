@@ -1,2 +1,3 @@
 - Some cubemap
-- Check
+- Highlight last move
+- Maybe undo
