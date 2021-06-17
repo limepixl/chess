@@ -34,12 +34,14 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 		glUniformMatrix4fv(shader->uniforms["model"], 1, GL_FALSE, &model[0][0]);
 		
 		glm::vec3 redTint(0.5f, 0.0f, 0.0f);
+		glm::vec3 selectedTint(0.0f, 0.0f, 0.4f);
+		glm::vec3 lastMoveTint(0.4f, 0.4f, 0.0f);
 		glm::vec3 col(-1.0f, -1.0f, -1.0f);
 		if(current->side == 0) // white
 		{
 			col = glm::vec3(1.0f, 1.0f, 1.0f);
 			if(current->meshIndex == 4 && state->whiteCheck)
-				col = glm::vec3(1.0f, 0.7f, 0.7f);
+				col += redTint;
 		}
 		else if(current->side == 1) // black
 		{
@@ -50,11 +52,15 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 
 		// If entity is selected, add highlight
 		if(state->selectedEntity != NULL && state->selectedEntity == current)
-			col += glm::vec3(0.0f, 0.0f, 0.4f);
+		{
+			if(current->meshIndex == 4 && (current->side == 0 && state->whiteCheck) || (current->side == 1 && state->blackCheck))
+				col -= redTint;
+			col += selectedTint;
+		}
 
 		// If entity is last, add highlight
 		if(state->lastMove != NULL && state->lastMove == current)
-			col += glm::vec3(0.4f, 0.4f, 0.0f);
+			col += lastMoveTint;
 		
 		glUniform3fv(shader->uniforms["col"], 1, &col[0]);
 
