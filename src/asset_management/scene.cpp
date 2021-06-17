@@ -166,8 +166,8 @@ void CheckForCheck(State *state, Scene *scene)
 
 	for(Entity &entity : scene->entities)
 	{
-		// if king, skip
-		if(entity.meshIndex == 4)
+		// if king or arrow, skip
+		if(entity.meshIndex == 4 || entity.meshIndex == 7)
 			continue;
 		
 		scene->ghosts.clear();
@@ -181,11 +181,13 @@ void CheckForCheck(State *state, Scene *scene)
 			{
 				printf("WHITE KING UNDER ATTACK\n");
 				state->whiteCheck = true;
+				return;
 			}
 			else if(ghostX == blackX && ghostY == blackY)
 			{
 				printf("BLACK KING UNDER ATTACK\n");
 				state->blackCheck = true;
+				return;
 			}
 		}
 	}
