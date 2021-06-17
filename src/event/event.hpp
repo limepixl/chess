@@ -6,8 +6,11 @@ struct State
 	int turn; // 0 for white 1 for black
 	bool shouldRotate;
 	bool shouldCastRay;
+	
 	struct Entity *selectedEntity;
 	struct Entity *lastMove;
+	glm::vec2 lastMoveEmpty;
+	unsigned long ticks;
 
 	int grid[64];
 

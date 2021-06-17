@@ -4,6 +4,7 @@ m bishop-moved.obj
 m king-moved.obj
 m queen-moved.obj
 m pawn-moved.obj
+m arrow.obj
 
 e 0 0.0  0 0.0 0 0  0 1 1 1 1
 e 1 5.0  0 0.0 0 0 0 1 1 1 1

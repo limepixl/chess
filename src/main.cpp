@@ -27,12 +27,19 @@ int main()
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
 	Mesh board = LoadMesh("res/models/board.obj");
 	
-	State state{0, false, false, NULL, {0}, {0}};
+	State state{0, false, false, NULL, NULL, {-1, -1}, 0, {0}};
 
 	Scene scene = LoadSceneFromFile("res/scenes/default.txt", &state);
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
-	glUseProgram(shader.ID);
 
+	// Add arrows in scene
+	for(int x = 0; x < 8; x++)
+	for(int y = 0; y < 8; y++)
+	{
+		scene.entities.push_back({7, glm::vec3(x * 5.0f, 0.0f, y * 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0, glm::vec3(0.0f, 0.0f, 0.0f)});
+	}
+
+	glUseProgram(shader.ID);
 	glm::mat4 projection = GetProjectionMatrix(&display);
 	glUniformMatrix4fv(shader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
 
@@ -134,6 +141,7 @@ int main()
 
 		SDL_GL_SwapWindow(display.window);
 
+
 		// End counting ms and calculate elapsed ms
 		end = SDL_GetPerformanceCounter();
 
@@ -145,6 +153,8 @@ int main()
 		end = SDL_GetPerformanceCounter();
 		elapsed = (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 		// printf("FPS: %.2f\n", 1000.0 / elapsed);
+
+		state.ticks = SDL_GetTicks();
 	}
 
 	SDL_Quit();

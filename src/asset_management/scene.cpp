@@ -20,6 +20,16 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 	for(size_t i = 0; i < scene->entities.size(); i++)
 	{
 		Entity* current = &scene->entities[i];
+
+		if(current->meshIndex == 7)
+		{
+			current->rotation.y = (float)(0.2f * state->ticks);
+			current->position.y = (float)std::sin(0.005 * (double)state->ticks);
+
+			if(state->lastMoveEmpty != glm::vec2(current->position.x, current->position.z) || state->lastMoveEmpty.x == -1)
+				continue;
+		}
+
 		glm::vec3 translation = current->position;
 		glm::vec3 rotation = current->rotation;
 		glm::vec3 scale = current->scale;
@@ -62,6 +72,10 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 		if(state->lastMove != NULL && state->lastMove == current)
 			col += lastMoveTint;
 		
+		// If entity is arrow, draw it with lastMoveTint
+		if(current->meshIndex == 7)
+			col = glm::vec3(1.0f, 1.0f, 0.5f);
+
 		glUniform3fv(shader->uniforms["col"], 1, &col[0]);
 
 		Mesh currentMesh = scene->meshes[current->meshIndex - 1];
@@ -209,6 +223,9 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 			for(size_t i = 0; i < scene.entities.size(); i++)
 			{
 				Entity &piece = scene.entities[i];
+				if(piece.meshIndex == 7)
+					continue;
+
 				if(piece.position == newPos)
 				{
 					printf("DELETING: %f %f %f\n", piece.position.x, piece.position.y, piece.position.z);
@@ -218,6 +235,7 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 				}
 				else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
 				{
+					state.lastMoveEmpty = glm::vec2(piece.position.x, piece.position.z);
 					state.selectedEntity = &piece;
 					state.lastMove = state.selectedEntity;
 				}
@@ -308,6 +326,9 @@ bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entiti
 	float radius = 2.0f;
 	for(Entity &e : entities)
 	{
+		if(e.meshIndex == 7)
+			continue;
+			
 		glm::vec3 center = e.position;
 		glm::vec3 oc = rayOrigin - center;
 		float a = glm::dot(rayDir, rayDir);
