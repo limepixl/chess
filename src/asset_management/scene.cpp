@@ -126,7 +126,7 @@ void DrawAABBs(std::vector<Entity> &entities, std::vector<Mesh> &meshes, Shader 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-bool CheckForCheck(State *state, Scene *scene)
+void CheckForCheck(State *state, Scene *scene)
 {
 	int whiteX = -1, whiteY = -1;
 	int blackX = -1, blackY = -1;
@@ -167,20 +167,17 @@ bool CheckForCheck(State *state, Scene *scene)
 			{
 				printf("WHITE KING UNDER ATTACK\n");
 				state->whiteCheck = true;
-				return true;
 			}
 			else if(ghostX == blackX && ghostY == blackY)
 			{
 				printf("BLACK KING UNDER ATTACK\n");
 				state->blackCheck = true;
-				return true;
 			}
 		}
 	}
 
 	state->whiteCheck = false;
 	state->blackCheck = false;
-	return false;
 }
 
 void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State &state)
@@ -229,7 +226,7 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 			state.turn = state.turn == 1 ? 0 : 1;
 			state.shouldRotate = true;
 
-			bool isCheck = CheckForCheck(&state, &scene);
+			CheckForCheck(&state, &scene);
 			// If, after the move, the king is [still] in check then don't apply the move
 			if((state.turn == 1 && state.whiteCheck) || (state.turn == 0 && state.blackCheck) ||
 				(copyState.whiteCheck && state.whiteCheck) || (copyState.blackCheck && state.blackCheck))

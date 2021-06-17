@@ -254,6 +254,7 @@ Texture LoadCubemapFromFile(const char *path)
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	}
 
+	printf("Loaded cubemap texture: %s\n", path);
 	return {ID, index, width, height, channels};
 }
 
