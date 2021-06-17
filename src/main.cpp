@@ -18,6 +18,11 @@ int main()
 	int windowHeight = 720;
 	Display display = CreateDisplay("Chess Titans - Stefan Ivanovski 196068 - 2021", windowWidth, windowHeight);
 
+	// Load cubemap
+	Shader cubemapShader = LoadShadersFromFiles("res/shaders/cubemapv.glsl", "res/shaders/cubemapf.glsl");
+	Texture cubemapTexture = LoadCubemapFromFile("res/images/cubemaps/gradient");
+	Mesh cubemap = LoadMesh("res/models/cube.obj");
+
 	Shader texturedShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/texturef.glsl");
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
 	Mesh board = LoadMesh("res/models/board.obj");
@@ -33,7 +38,7 @@ int main()
 
 	// Camera stuff
 	Camera camera;
-	camera.cameraPos = glm::vec3(17.5f, 45.0f, 40.0f + 17.5f);
+	camera.cameraPos = glm::vec3(17.5f, 50.0f, 40.0f + 17.5f);
 	camera.destination = glm::vec3(17.5f, 0.0f, 17.5f);
 	camera.dir = camera.destination - camera.cameraPos;
 	camera.right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), camera.dir);
@@ -108,6 +113,24 @@ int main()
 			glm::vec3 rayWorld = CastRay(&display, projection, camera.view);
 			UpdateBoard(rayWorld, camera.cameraPos, scene, state);
 		}
+
+		// Draw cubemap last
+		glUseProgram(cubemapShader.ID);
+
+		glUniformMatrix4fv(cubemapShader.uniforms["projection"], 1, GL_FALSE, &projection[0][0]);
+
+		glm::mat4 viewMatrixSansTranslation = glm::mat4(glm::mat3(camera.view));
+		glUniformMatrix4fv(cubemapShader.uniforms["view"], 1, GL_FALSE, &viewMatrixSansTranslation[0][0]);
+
+		model = glm::mat4(1.0f);
+		model = glm::scale(model, glm::vec3(100.0f, 100.0f, 100.0f));
+		glUniformMatrix4fv(cubemapShader.uniforms["model"], 1, GL_FALSE, &model[0][0]);
+
+		glActiveTexture(GL_TEXTURE0 + cubemapTexture.index);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture.ID);
+
+		glBindVertexArray(cubemap.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, (int)cubemap.numVertices);
 
 		SDL_GL_SwapWindow(display.window);
 

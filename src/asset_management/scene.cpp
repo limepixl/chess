@@ -40,7 +40,7 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 
 		// If entity is selected, add highlight
 		if(state->selectedEntity != NULL && state->selectedEntity == current)
-			col += glm::vec3(0.4f, 0.0f, 0.0f);
+			col += glm::vec3(0.0f, 0.0f, 0.4f);
 		
 		glUniform3fv(shader->uniforms["col"], 1, &col[0]);
 

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(chess)
 
 link_directories(${CMAKE_BINARY_DIR}/thirdparty/SDL2 
+				 ${CMAKE_BINARY_DIR}/build/thirdparty/SDL2/
 				 ${CMAKE_BINARY_DIR}/build/Debug/thirdparty/SDL2/Debug
 				 ${CMAKE_BINARY_DIR}/build/Release/thirdparty/SDL2/Release)
 
@@ -30,12 +31,12 @@ add_executable(
 	thirdparty/glad/src/glad.c
 	thirdparty/stb_image/stb_image.c)
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT chess)
 if(WIN32)
-	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG" OR "${CMAKE_BUILD_TYPE}" STREQUAL "x64-Debug")
-		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib SDL2d.lib SDL2maind.lib)
-	else("${CMAKE_BUILD_TYPE}" STREQUAL "Release" OR "${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE" OR "${CMAKE_BUILD_TYPE}" STREQUAL "x64-Release")
+	set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT chess)
+	set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG" OR ${CMAKE_BUILD_TYPE} STREQUAL "x64-Debug")
+		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib SDL2.lib SDL2main.lib)
+	else(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE" OR ${CMAKE_BUILD_TYPE} STREQUAL "x64-Release")
 		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib SDL2.lib SDL2main.lib)
 	endif()
 

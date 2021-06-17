@@ -212,6 +212,51 @@ Texture LoadTextureFromFile(const char *path)
 	return {ID, index, width, height, channels};
 }
 
+Texture LoadCubemapFromFile(const char *path)
+{
+	unsigned int ID;
+	glGenTextures(1, &ID);
+
+	int index = Texture::numTexturesLoaded++;
+	glActiveTexture(GL_TEXTURE0 + index);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
+
+	// Cubemap load order
+	// Right Left Top Bottom Back Front
+	std::vector<std::string> faces
+	{
+		std::string(path) + "/px.png",	
+		std::string(path) + "/nx.png",	
+		std::string(path) + "/py.png",	
+		std::string(path) + "/ny.png",	
+		std::string(path) + "/pz.png",	
+		std::string(path) + "/nz.png",	
+	};
+
+	//stbi_set_flip_vertically_on_load(1);
+
+	int width, height, channels;
+	for(int i = 0; i < 6; i++)
+	{
+		unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &channels, 3);
+		if(data == NULL)
+		{
+			printf("Failed to load part of cubemap from path %s\n", faces[i].c_str());
+			continue;
+		}
+
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	}
+
+	return {ID, index, width, height, channels};
+}
+
 Mesh LoadMesh(const char *path)
 {
 	std::string binaryFile(path);

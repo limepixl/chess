@@ -5,6 +5,7 @@
 
 Shader LoadShadersFromFiles(const char *vertexPath, const char *fragmentPath);
 Texture LoadTextureFromFile(const char *path);
+Texture LoadCubemapFromFile(const char *path);
 
 Mesh LoadMeshFromOBJ(const char *path);
 Mesh LoadMesh(const char *path);
