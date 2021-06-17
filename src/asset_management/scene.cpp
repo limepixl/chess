@@ -63,7 +63,7 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 		// If entity is selected, add highlight
 		if(state->selectedEntity != NULL && state->selectedEntity == current)
 		{
-			if(current->meshIndex == 4 && (current->side == 0 && state->whiteCheck) || (current->side == 1 && state->blackCheck))
+			if(current->meshIndex == 4 && (current->side == 0 && state->whiteCheck || current->side == 1 && state->blackCheck))
 				col -= redTint;
 			col += selectedTint;
 		}
