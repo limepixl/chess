@@ -7,6 +7,7 @@ struct State
 	bool shouldRotate;
 	bool shouldCastRay;
 	struct Entity *selectedEntity;
+	struct Entity *lastMove;
 
 	int grid[64];
 

@@ -22,6 +22,8 @@ struct Entity
 	glm::vec3 tint;
 };
 
+bool operator==(const Entity& left, const Entity& right);
+
 struct Scene
 {
 	std::vector<Mesh> meshes;

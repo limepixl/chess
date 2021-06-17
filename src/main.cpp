@@ -27,7 +27,7 @@ int main()
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
 	Mesh board = LoadMesh("res/models/board.obj");
 	
-	State state{0, false, false, NULL, {0}};
+	State state{0, false, false, NULL, {0}, {0}};
 
 	Scene scene = LoadSceneFromFile("res/scenes/default.txt", &state);
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");

@@ -4,6 +4,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "../event/event.hpp"
 
+bool operator==(const Entity& left, const Entity& right)
+{
+	return left.meshIndex == right.meshIndex && 
+		   left.position == right.position &&
+		   left.rotation == right.rotation &&
+		   left.scale == right.scale &&
+		   left.side == right.side &&
+		   left.tint == right.tint;
+}
+
 void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 {
 	// Draw all actual pieces
@@ -41,6 +51,10 @@ void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 		// If entity is selected, add highlight
 		if(state->selectedEntity != NULL && state->selectedEntity == current)
 			col += glm::vec3(0.0f, 0.0f, 0.4f);
+
+		// If entity is last, add highlight
+		if(state->lastMove != NULL && state->lastMove == current)
+			col += glm::vec3(0.4f, 0.4f, 0.0f);
 		
 		glUniform3fv(shader->uniforms["col"], 1, &col[0]);
 
@@ -202,6 +216,7 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 				else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
 				{
 					state.selectedEntity = &piece;
+					state.lastMove = state.selectedEntity;
 				}
 			}
 			state.selectedEntity->position = newPos;
