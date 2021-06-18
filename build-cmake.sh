@@ -1,6 +1,15 @@
 #!/bin/bash
 
-cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release
-cmake --build build/thirdparty/tinyobjloader -j 2
-cmake --build build/thirdparty/SDL2 -j 2
-cmake --build build -j 2
+# Build SDL2
+cmake -S thirdparty/SDL2 -B thirdparty/build-SDL2 -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_INSTALL_PREFIX="build" -DSDL_STATIC="OFF" -DVIDEO_WAYLAND="OFF" -DWAYLAND_SHARED="OFF"
+ninja -C thirdparty/build-SDL2 install
+
+# Build tinyobjloader
+cmake -S thirdparty/tinyobjloader -B thirdparty/build-TOBJL -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_INSTALL_PREFIX="build"
+ninja -C thirdparty/build-TOBJL install
+
+# Build chess
+cmake -S . -B build-chess -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_INSTALL_PREFIX="build"
+ninja -C build-chess
+
+mv build-chess/chess build/bin/chess

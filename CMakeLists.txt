@@ -41,9 +41,9 @@ if(WIN32)
 	
 elseif(UNIX)
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
-		set(LIBS ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2d.a pthread dl)
+		set(LIBS SDL2 pthread dl)
 	else(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-		set(LIBS ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SDL2/libSDL2.a pthread dl)
+		set(LIBS SDL2 pthread dl)
 	endif()
 
 	SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
