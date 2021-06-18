@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -223,7 +223,7 @@ typedef uint64_t Uint64;
 
 /* @} *//* Basic data types */
 
-/* Make sure we have macros for printing 64 bit values.
+/* Make sure we have macros for printing width-based integers.
  * <stdint.h> should define these but this is not true all platforms.
  * (for example win32) */
 #ifndef SDL_PRIs64
@@ -268,6 +268,34 @@ typedef uint64_t Uint64;
 #define SDL_PRIX64 "lX"
 #else
 #define SDL_PRIX64 "llX"
+#endif
+#endif
+#ifndef SDL_PRIs32
+#ifdef PRId32
+#define SDL_PRIs32 PRId32
+#else
+#define SDL_PRIs32 "d"
+#endif
+#endif
+#ifndef SDL_PRIu32
+#ifdef PRIu32
+#define SDL_PRIu32 PRIu32
+#else
+#define SDL_PRIu32 "u"
+#endif
+#endif
+#ifndef SDL_PRIx32
+#ifdef PRIx32
+#define SDL_PRIx32 PRIx32
+#else
+#define SDL_PRIx32 "x"
+#endif
+#endif
+#ifndef SDL_PRIX32
+#ifdef PRIX32
+#define SDL_PRIX32 PRIX32
+#else
+#define SDL_PRIX32 "X"
 #endif
 #endif
 
@@ -338,7 +366,7 @@ SDL_COMPILE_TIME_ASSERT(sint64, sizeof(Sint64) == 8);
 
 /** \cond */
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
-#if !defined(__ANDROID__)
+#if !defined(__ANDROID__) && !defined(__VITA__)
    /* TODO: include/SDL_stdinc.h:174: error: size of array 'SDL_dummy_enum' is negative */
 typedef enum
 {
@@ -412,10 +440,18 @@ extern DECLSPEC int SDLCALL SDL_abs(int x);
 #define SDL_min(x, y) (((x) < (y)) ? (x) : (y))
 #define SDL_max(x, y) (((x) > (y)) ? (x) : (y))
 
+extern DECLSPEC int SDLCALL SDL_isalpha(int x);
+extern DECLSPEC int SDLCALL SDL_isalnum(int x);
+extern DECLSPEC int SDLCALL SDL_isblank(int x);
+extern DECLSPEC int SDLCALL SDL_iscntrl(int x);
 extern DECLSPEC int SDLCALL SDL_isdigit(int x);
+extern DECLSPEC int SDLCALL SDL_isxdigit(int x);
+extern DECLSPEC int SDLCALL SDL_ispunct(int x);
 extern DECLSPEC int SDLCALL SDL_isspace(int x);
 extern DECLSPEC int SDLCALL SDL_isupper(int x);
 extern DECLSPEC int SDLCALL SDL_islower(int x);
+extern DECLSPEC int SDLCALL SDL_isprint(int x);
+extern DECLSPEC int SDLCALL SDL_isgraph(int x);
 extern DECLSPEC int SDLCALL SDL_toupper(int x);
 extern DECLSPEC int SDLCALL SDL_tolower(int x);
 
@@ -432,7 +468,7 @@ SDL_FORCE_INLINE void SDL_memset4(void *dst, Uint32 val, size_t dwords)
 {
 #ifdef __APPLE__
     memset_pattern4(dst, &val, dwords * 4);
-#elif defined(__GNUC__) && defined(i386)
+#elif defined(__GNUC__) && defined(__i386__)
     int u0, u1, u2;
     __asm__ __volatile__ (
         "cld \n\t"
@@ -445,16 +481,28 @@ SDL_FORCE_INLINE void SDL_memset4(void *dst, Uint32 val, size_t dwords)
     size_t _n = (dwords + 3) / 4;
     Uint32 *_p = SDL_static_cast(Uint32 *, dst);
     Uint32 _val = (val);
-    if (dwords == 0)
+    if (dwords == 0) {
         return;
-    switch (dwords % 4)
-    {
+    }
+
+    /* !!! FIXME: there are better ways to do this, but this is just to clean this up for now. */
+    #ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wimplicit-fallthrough"
+    #endif
+
+    switch (dwords % 4) {
         case 0: do {    *_p++ = _val;   /* fallthrough */
         case 3:         *_p++ = _val;   /* fallthrough */
         case 2:         *_p++ = _val;   /* fallthrough */
         case 1:         *_p++ = _val;   /* fallthrough */
         } while ( --_n );
     }
+
+    #ifdef __clang__
+    #pragma clang diagnostic pop
+    #endif
+
 #endif
 }
 
@@ -549,6 +597,10 @@ extern DECLSPEC double SDLCALL SDL_log10(double x);
 extern DECLSPEC float SDLCALL SDL_log10f(float x);
 extern DECLSPEC double SDLCALL SDL_pow(double x, double y);
 extern DECLSPEC float SDLCALL SDL_powf(float x, float y);
+extern DECLSPEC double SDLCALL SDL_round(double x);
+extern DECLSPEC float SDLCALL SDL_roundf(float x);
+extern DECLSPEC long SDLCALL SDL_lround(double x);
+extern DECLSPEC long SDLCALL SDL_lroundf(float x);
 extern DECLSPEC double SDLCALL SDL_scalbn(double x, int n);
 extern DECLSPEC float SDLCALL SDL_scalbnf(float x, int n);
 extern DECLSPEC double SDLCALL SDL_sin(double x);

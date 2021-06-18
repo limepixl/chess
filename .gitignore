@@ -2,3 +2,5 @@ build
 *.bmp
 *.ppm
 *.bin
+build-chess
+thirdparty/build-*

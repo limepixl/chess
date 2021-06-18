@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -25,18 +25,25 @@
 /* Definitions of useful USB VID/PID values */
 
 #define USB_VENDOR_APPLE        0x05ac
+#define USB_VENDOR_GOOGLE       0x18d1
 #define USB_VENDOR_HYPERKIN     0x2e24
 #define USB_VENDOR_MICROSOFT    0x045e
 #define USB_VENDOR_NINTENDO     0x057e
 #define USB_VENDOR_NVIDIA       0x0955
 #define USB_VENDOR_PDP          0x0e6f
+#define USB_VENDOR_POWERA_ALT   0x20d6
 #define USB_VENDOR_POWERA       0x24c6
-#define USB_VENDOR_SONY         0x054c
 #define USB_VENDOR_RAZER        0x1532
+#define USB_VENDOR_SHENZHEN     0x0079
+#define USB_VENDOR_SONY         0x054c
 #define USB_VENDOR_VALVE        0x28de
 
+#define USB_PRODUCT_GOOGLE_STADIA_CONTROLLER            0x9400
+#define USB_PRODUCT_EVORETRO_GAMECUBE_ADAPTER           0x1846
 #define USB_PRODUCT_NINTENDO_GAMECUBE_ADAPTER           0x0337
 #define USB_PRODUCT_NINTENDO_SWITCH_PRO                 0x2009
+#define USB_PRODUCT_NINTENDO_SWITCH_JOY_CON_LEFT        0x2006
+#define USB_PRODUCT_NINTENDO_SWITCH_JOY_CON_RIGHT       0x2007
 #define USB_PRODUCT_RAZER_PANTHERA                      0x0401
 #define USB_PRODUCT_RAZER_PANTHERA_EVO                  0x1008
 #define USB_PRODUCT_RAZER_ATROX                         0x0a00
@@ -44,6 +51,8 @@
 #define USB_PRODUCT_SONY_DS4_DONGLE                     0x0ba0
 #define USB_PRODUCT_SONY_DS4_SLIM                       0x09cc
 #define USB_PRODUCT_SONY_DS5                            0x0ce6
+#define USB_PRODUCT_XBOX360_XUSB_CONTROLLER             0x02a1    /* XUSB driver software PID */
+#define USB_PRODUCT_XBOX360_WIRELESS_RECEIVER           0x0719
 #define USB_PRODUCT_XBOX_ONE_ELITE_SERIES_1             0x02e3
 #define USB_PRODUCT_XBOX_ONE_ELITE_SERIES_2             0x0b00
 #define USB_PRODUCT_XBOX_ONE_ELITE_SERIES_2_BLUETOOTH   0x0b05
@@ -52,7 +61,8 @@
 #define USB_PRODUCT_XBOX_ONE_S_REV2_BLUETOOTH           0x02fd
 #define USB_PRODUCT_XBOX_ONE_SERIES_X                   0x0b12
 #define USB_PRODUCT_XBOX_ONE_SERIES_X_BLUETOOTH         0x0b13
-#define USB_PRODUCT_XBOX_ONE_RAW_INPUT_CONTROLLER       0x02ff
+#define USB_PRODUCT_XBOX_ONE_SERIES_X_POWERA            0x2001
+#define USB_PRODUCT_XBOX_ONE_XBOXGIP_CONTROLLER         0x02ff    /* XBOXGIP driver software PID */
 #define USB_PRODUCT_XBOX_ONE_XINPUT_CONTROLLER          0x02fe    /* Made up product ID for XInput */
 
 /* USB usage pages */

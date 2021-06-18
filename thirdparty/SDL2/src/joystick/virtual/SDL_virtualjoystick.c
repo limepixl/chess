@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -176,7 +176,7 @@ SDL_JoystickSetVirtualAxisInner(SDL_Joystick * joystick, int axis, Sint16 value)
     }
 
     hwdata = (joystick_hwdata *)joystick->hwdata;
-    if (axis < 0 || axis >= hwdata->nbuttons) {
+    if (axis < 0 || axis >= hwdata->naxes) {
         SDL_UnlockJoysticks();
         return SDL_SetError("Invalid axis index");
     }
@@ -226,7 +226,7 @@ SDL_JoystickSetVirtualHatInner(SDL_Joystick * joystick, int hat, Uint8 value)
     }
 
     hwdata = (joystick_hwdata *)joystick->hwdata;
-    if (hat < 0 || hat >= hwdata->nbuttons) {
+    if (hat < 0 || hat >= hwdata->nhats) {
         SDL_UnlockJoysticks();
         return SDL_SetError("Invalid hat index");
     }
@@ -445,6 +445,6 @@ SDL_JoystickDriver SDL_VIRTUAL_JoystickDriver =
     VIRTUAL_JoystickGetGamepadMapping
 };
 
-#endif /* SDL_JOYSTICK_VIRTUAL || SDL_JOYSTICK_DISABLED */
+#endif /* SDL_JOYSTICK_VIRTUAL */
 
 /* vi: set ts=4 sw=4 expandtab: */

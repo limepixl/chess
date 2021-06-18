@@ -1,16 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(chess)
 
-link_directories(${CMAKE_BINARY_DIR}/thirdparty/SDL2 
-				 ${CMAKE_BINARY_DIR}/build/thirdparty/SDL2/
-				 ${CMAKE_BINARY_DIR}/build/Debug/thirdparty/SDL2/Debug
-				 ${CMAKE_BINARY_DIR}/build/Release/thirdparty/SDL2/Release)
+link_directories(build/lib)
 
-
-set(SDL_STATIC OFF)
-add_subdirectory(thirdparty/SDL2)
-set_target_properties(SDL2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-add_subdirectory(thirdparty/tinyobjloader)
 include_directories(
 	thirdparty/SDL2/include 
 	thirdparty/glad/include
@@ -31,9 +23,9 @@ add_executable(
 	thirdparty/glad/src/glad.c
 	thirdparty/stb_image/stb_image.c)
 
+set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT chess)
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 if(WIN32)
-	set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT chess)
-	set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG" OR ${CMAKE_BUILD_TYPE} STREQUAL "x64-Debug")
 		set(LIBS Setupapi.lib Winmm.lib Imm32.lib Version.lib SDL2.lib SDL2main.lib)
 	else(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE" OR ${CMAKE_BUILD_TYPE} STREQUAL "x64-Release")
