@@ -11,11 +11,11 @@ uniform vec3 viewPos;
 void main()
 {
 	vec3 lightDir = normalize(lightPos - fragPos);
-	float diff = max(0, dot(normals, lightDir));
+	float diff = max(0.0, dot(normals, lightDir));
 
 	vec3 viewDir = normalize(viewPos - fragPos);
 	vec3 reflectedDir = reflect(-lightDir, normals);
-	float spec = pow(max(0, dot(reflectedDir, viewDir)), 32);
+	float spec = pow(max(0.0, dot(reflectedDir, viewDir)), 32);
 
 	vec3 ambient = col * 0.1;
 	vec3 diffuse = col * diff;

@@ -141,7 +141,6 @@ int main()
 
 		SDL_GL_SwapWindow(display.window);
 
-
 		// End counting ms and calculate elapsed ms
 		end = SDL_GetPerformanceCounter();
 
