@@ -29,7 +29,7 @@
 4) Отворете го Visual Studio Solution фајлот chess.sln
 5) Најгоре, одберете Release наместо Debug
 6) Стиснете најгоре Build -> Build Solution или пак стиснете F7
-7) Ако chess проектот има успешен build (без разлика на други errors) може да пробате да ја тестирате програмата
+7) Ако chess проектот има успешен build (без разлика на други errors) може да пробате да ја тестирате програмата. Ако има Link error, пробајте пак со чекор 6, по што би требало да има 0 failed builds.
 8) Стиснете најгоре Local Windows Debugger или стиснете F5
 
 ## Third party libraries
