@@ -23,7 +23,7 @@ AABB ComputeAABBFromVertices(std::vector<float>& vertices)
 		float v1 = vertices[i];
 		float v2 = vertices[i + 1];
 		float v3 = vertices[i + 2];
-
+        
 		if(min[0] > v1) min[0] = v1;
 		if(min[1] > v2) min[1] = v2;
 		if(min[2] > v3) min[2] = v3;
@@ -31,7 +31,7 @@ AABB ComputeAABBFromVertices(std::vector<float>& vertices)
 		if(max[1] < v2) max[1] = v2;
 		if(max[2] < v3) max[2] = v3;
 	}
-
+    
 	return {min, max};
 }
 
@@ -39,21 +39,21 @@ glm::vec3 CastRay(Display *display, glm::mat4 &projection, glm::mat4 &view)
 {
 	int xtmp, ytmp;
 	SDL_GetMouseState(&xtmp, &ytmp);
-
+    
 	// https://antongerdelan.net/opengl/raycasting.html
 	// Convert x and y to normalized device coordinates
 	float x = (2.0f * xtmp) / display->width - 1.0f;
 	float y = 1.0f - (2.0f * ytmp) / display->height;
-
+    
 	// 4D Homogeneous clip coordinates
 	glm::vec4 rayClip(x, y, -1.0f, 1.0f);
-
+    
 	// 4D Camera coordinates
 	glm::vec4 rayCam = glm::inverse(projection) * rayClip;
 	// unproject xy
 	rayCam.z = -1.0f;
 	rayCam.w = 0.0f;
-
+    
 	// World coordinates
 	rayCam = glm::inverse(view) * rayCam;
 	glm::vec3 rayWorld(rayCam.x, rayCam.y, rayCam.z);

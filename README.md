@@ -9,7 +9,7 @@
 
 1) По инсталирање според горенаведените инструкции, во Windows Start Menu побарајте за Developer Command Prompt и извршете го првиот резултат.
 2) Навигирајте до директориумот на репозиториумот што го преземавте.
-3) Извршете ја batch скриптата build-cmake.bat со пишување на: build-cmake.bat
+3) Извршете ја batch скриптата build.bat со пишување на: build.bat
 4) Откако ќе се компајлира цел проект, напишете во конзолата: `build\bin\chess.exe`
 
 - Linux: GCC, Clang
@@ -19,7 +19,7 @@
 КОМАНДА ЗА UBUNTU: `sudo apt install cmake ninja-build gcc g++ clang xorg-dev libx11-dev libgl1-mesa-glx`
 
 1) По инсталирање според горенаведените инструкции, отворете терминал и навигирајте до директориумот на репозиториумот што го преземавте.
-2) Извршете ја shell скриптата build-cmake.sh (Ако не може да се изврши, напишете `chmod +x ./build-cmake.sh`)
+2) Извршете ја shell скриптата build.sh (Ако не може да се изврши, напишете `chmod +x ./build.sh`)
 3) Откако ќе се компајлира цел проект, напишете во терминалот: `./build/bin/chess`
 
 ## Third party libraries
