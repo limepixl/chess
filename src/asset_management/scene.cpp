@@ -211,6 +211,23 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 			int newX = (int)(ghostEntity->position.x / 5.0f);
 			int newY = (int)(ghostEntity->position.z / 5.0f);
             
+            if(state.selectedEntity->side == 0)
+            {
+                if(state.selectedEntity->meshIndex == 4 && (newY != 7 || (newX != 4 && newX != 6)))
+                    state.whiteCanCastle = false;
+                
+                else if(state.selectedEntity->meshIndex == 1 && (newY != 7 || newX != 7))
+                    state.whiteCanCastle = false;
+            }
+            else
+            {
+                if(state.selectedEntity->meshIndex == 4 && (newY != 0 || (newX != 4 && newX != 6)))
+                    state.blackCanCastle = false;
+                
+                else if(state.selectedEntity->meshIndex == 1 && (newY != 0 || newX != 7))
+                    state.blackCanCastle = false;
+            }
+            
             // Castling, move rook to appropriate place
             if((((state.whiteCanCastle && state.grid[selectedX + selectedY * 8] == 4) ||
                  (state.blackCanCastle && state.grid[selectedX + selectedY * 8] == -4))) && 
@@ -239,78 +256,78 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
                 
             }
             
-			State copyState = state;
-			Scene copyScene = scene;
+            State copyState = state;
+            Scene copyScene = scene;
             
-			// Update state grid
-			state.grid[newX + newY * 8] = state.grid[selectedX + selectedY * 8];
-			state.grid[selectedX + selectedY * 8] = 0;
+            // Update state grid
+            state.grid[newX + newY * 8] = state.grid[selectedX + selectedY * 8];
+            state.grid[selectedX + selectedY * 8] = 0;
             
-			printf("Current: %d %d\n", selectedX, selectedY);
-			printf("Eating: %d %d\n", newX, newY);
+            printf("Current: %d %d\n", selectedX, selectedY);
+            printf("Eating: %d %d\n", newX, newY);
             
-			glm::vec3 newPos(newX * 5.0f, 0.0f, newY * 5.0f);
-			for(size_t i = 0; i < scene.entities.size(); i++)
-			{
-				Entity &piece = scene.entities[i];
-				if(piece.meshIndex == 7)
-					continue;
+            glm::vec3 newPos(newX * 5.0f, 0.0f, newY * 5.0f);
+            for(size_t i = 0; i < scene.entities.size(); i++)
+            {
+                Entity &piece = scene.entities[i];
+                if(piece.meshIndex == 7)
+                    continue;
                 
-				if(piece.position == newPos)
-				{
-					printf("DELETING: %f %f %f\n", piece.position.x, piece.position.y, piece.position.z);
-					scene.entities.erase(scene.entities.begin() + i);
-					i--;
-					continue;
-				}
-				else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
-				{
-					state.lastMoveEmpty = glm::vec2(piece.position.x, piece.position.z);
-					state.selectedEntity = &piece;
-					state.lastMove = state.selectedEntity;
-				}
-			}
-			state.selectedEntity->position = newPos;
-			state.turn = state.turn == 1 ? 0 : 1;
-			state.shouldRotate = true;
+                if(piece.position == newPos)
+                {
+                    printf("DELETING: %f %f %f\n", piece.position.x, piece.position.y, piece.position.z);
+                    scene.entities.erase(scene.entities.begin() + i);
+                    i--;
+                    continue;
+                }
+                else if(piece.position == glm::vec3(selectedX * 5.0f, 0.0f, selectedY * 5.0f))
+                {
+                    state.lastMoveEmpty = glm::vec2(piece.position.x, piece.position.z);
+                    state.selectedEntity = &piece;
+                    state.lastMove = state.selectedEntity;
+                }
+            }
+            state.selectedEntity->position = newPos;
+            state.turn = state.turn == 1 ? 0 : 1;
+            state.shouldRotate = true;
             
-			CheckForCheck(&state, &scene);
-			// If, after the move, the king is [still] in check then don't apply the move
-			if((state.turn == 1 && state.whiteCheck) || (state.turn == 0 && state.blackCheck) ||
+            CheckForCheck(&state, &scene);
+            // If, after the move, the king is [still] in check then don't apply the move
+            if((state.turn == 1 && state.whiteCheck) || (state.turn == 0 && state.blackCheck) ||
                (copyState.whiteCheck && state.whiteCheck) || (copyState.blackCheck && state.blackCheck))
-			{
-				state = copyState;
-				scene = copyScene;
-			}
-			
-			scene.ghosts.clear();
-			state.selectedEntity = NULL;
-		}
-	}
+            {
+                state = copyState;
+                scene = copyScene;
+            }
+            
+            scene.ghosts.clear();
+            state.selectedEntity = NULL;
+        }
+    }
     
-	if(!hitGhost)
-	{
-		Entity *hitEntity = NULL;
-		bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
-		if(hit)
-		{
-			if(hitEntity->side == state.turn)
-			{
-				state.selectedEntity = hitEntity;
+    if(!hitGhost)
+    {
+        Entity *hitEntity = NULL;
+        bool hit = RayHit(cameraPos, rayWorld, scene.entities, &hitEntity);
+        if(hit)
+        {
+            if(hitEntity->side == state.turn)
+            {
+                state.selectedEntity = hitEntity;
                 
-				// If there are highlights, clear them
-				if (scene.ghosts.size() > 0)
-					scene.ghosts.clear();
+                // If there are highlights, clear them
+                if (scene.ghosts.size() > 0)
+                    scene.ghosts.clear();
                 
-				GenerateGhostsOnGrid(&state, &scene);
-			}
-		}
-		else
-		{
-			state.selectedEntity = NULL;
-			scene.ghosts.clear();
-		}
-	}
+                GenerateGhostsOnGrid(&state, &scene);
+            }
+        }
+        else
+        {
+            state.selectedEntity = NULL;
+            scene.ghosts.clear();
+        }
+    }
 }
 
 void RotateBoard(State &state, Camera &cam)
