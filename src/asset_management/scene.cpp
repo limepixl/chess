@@ -211,6 +211,34 @@ void UpdateBoard(glm::vec3 &rayWorld, glm::vec3 &cameraPos, Scene &scene, State 
 			int newX = (int)(ghostEntity->position.x / 5.0f);
 			int newY = (int)(ghostEntity->position.z / 5.0f);
             
+            // Castling, move rook to appropriate place
+            if((((state.whiteCanCastle && state.grid[selectedX + selectedY * 8] == 4) ||
+                 (state.blackCanCastle && state.grid[selectedX + selectedY * 8] == -4))) && 
+               newX == selectedX + 2)
+            {
+                // Find rook to move
+                bool foundRook = false;
+                for(Entity &entity : scene.entities)
+                {
+                    if(abs(entity.meshIndex) == 1 && entity.position.x == ghostEntity->position.x + 5.0f && entity.position.z == ghostEntity->position.z)
+                    {
+                        foundRook = true;
+                        entity.position.x = 5.0f * (newX - 1);
+                        state.grid[newX + 1 + newY * 8] = 0;
+                        state.grid[newX - 1 + newY * 8] = entity.side == 0 ? 1 : -1;
+                        break;
+                    }
+                }
+                
+                if(!foundRook) printf("Couldn't find rook for castle!\n");
+                
+                if(state.grid[selectedX + selectedY * 8] == 4)
+                    state.whiteCanCastle = false;
+                else if(state.grid[selectedX + selectedY * 8] == -4)
+                    state.blackCanCastle = false;
+                
+            }
+            
 			State copyState = state;
 			Scene copyScene = scene;
             
@@ -519,6 +547,16 @@ void GenerateGhostsOnGrid(State *state, Scene *scene)
                         AddToVector(ghosts, selectedEntity, pos);
                 }
             }
+            
+            if((state->whiteCanCastle && currentWhite) || (state->blackCanCastle && !currentWhite))
+            {
+                if(grid[selectedX + 1 + selectedY * 8] == 0 &&
+                   grid[selectedX + 2 + selectedY * 8] == 0)
+                {
+                    AddToVector(ghosts, selectedEntity, glm::ivec2(selectedX+2, selectedY));
+                }
+            }
+            
             break;
         }
         

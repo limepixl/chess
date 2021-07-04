@@ -29,7 +29,7 @@ int main()
 	
 	State state{0, false, false, NULL, NULL, {-1, -1}, 0, {0}};
     
-	Scene scene = LoadSceneFromFile("res/scenes/default.txt", &state);
+	Scene scene = LoadSceneFromFile("res/scenes/castle.txt", &state);
 	Shader shader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/basicf.glsl");
     
 	// Add arrows in scene
