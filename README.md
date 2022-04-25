@@ -2,6 +2,8 @@
 Ова е едноставна имплементација на играта шах. 
 Стефан Ивановски 196068
 
+![image](https://raw.githubusercontent.com/limepixl/chess/main/renders/render.png)
+
 ## Build
 
 - Windows: MSVC
