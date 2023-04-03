@@ -59,12 +59,13 @@ int main()
 	double targetFPS = 1000.0 / 60.0;
     
 	// Set lightPos for all shaders
+	glm::vec3 lightPos(17.5f, 30.0f, 17.5f);
 	glUseProgram(shader.ID);
-	glUniform3f(shader.uniforms["lightPos"], 17.5f, 30.0f, 17.5f);
+	glUniform3f(shader.uniforms["lightPos"], lightPos.x, lightPos.y, lightPos.z);
 	glUseProgram(texturedShader.ID);
-	glUniform3f(texturedShader.uniforms["lightPos"], 17.5f, 30.0f, 17.5f);
+	glUniform3f(texturedShader.uniforms["lightPos"], lightPos.x, lightPos.y, lightPos.z);
 	glUseProgram(ghostShader.ID);
-	glUniform3f(ghostShader.uniforms["lightPos"], 17.5f, 30.0f, 17.5f);
+	glUniform3f(ghostShader.uniforms["lightPos"], lightPos.x, lightPos.y, lightPos.z);
     
 	while(true)
 	{
