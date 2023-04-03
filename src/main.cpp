@@ -21,11 +21,11 @@ int main()
 	// Load cubemap
 	Shader cubemapShader = LoadShadersFromFiles("res/shaders/cubemapv.glsl", "res/shaders/cubemapf.glsl");
 	Texture cubemapTexture = LoadCubemapFromFile("res/images/cubemaps/gradient");
-	Mesh cubemap = LoadMesh("res/models/cube.obj");
+	Mesh cubemapMesh = LoadMesh("res/models/cube.obj");
     
 	Shader texturedShader = LoadShadersFromFiles("res/shaders/basicv.glsl", "res/shaders/texturef.glsl");
 	Texture boardTexture = LoadTextureFromFile("res/images/checkerboard.png");
-	Mesh board = LoadMesh("res/models/board.obj");
+	Mesh boardMesh = LoadMesh("res/models/board.obj");
 	
 	State state{0, false, false, NULL, NULL, {-1, -1}, 0, {0}};
     
@@ -36,7 +36,13 @@ int main()
 	for(int x = 0; x < 8; x++)
         for(int y = 0; y < 8; y++)
 	{
-		scene.entities.push_back({7, glm::vec3(x * 5.0f, 0.0f, y * 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0, glm::vec3(0.0f, 0.0f, 0.0f)});
+		scene.entities.push_back(
+			Entity(glm::vec3(x * 5.0f, 0.0f, y * 5.0f), 
+				   glm::vec3(0.0f), 
+				   glm::vec3(1.0f), 
+				   7, 
+				   0)
+		);
 	}
     
 	glUseProgram(shader.ID);
@@ -56,7 +62,8 @@ int main()
     
 	// Counters
 	Uint64 start, end;
-	double targetFPS = 1000.0 / 60.0;
+	double targetFPS = 60.0;
+	double targetMS = 1000.0 / targetFPS;
     
 	// Set lightPos for all shaders
 	glm::vec3 lightPos(17.5f, 30.0f, 17.5f);
@@ -102,10 +109,10 @@ int main()
 		glUniformMatrix4fv(texturedShader.uniforms["model"], 1, GL_FALSE, &model[0][0]);
         
 		glUniform1i(texturedShader.uniforms["tex"], boardTexture.index);
-		BindTexture(&boardTexture);
+		boardTexture.BindTexture2D();
         
-		glBindVertexArray(board.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, (int)board.numVertices);
+		glBindVertexArray(boardMesh.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, (int)boardMesh.numVertices);
 		glBindVertexArray(0);
         
 		// Update ghost matrices
@@ -130,15 +137,13 @@ int main()
 		glm::mat4 viewMatrixSansTranslation = glm::mat4(glm::mat3(camera.view));
 		glUniformMatrix4fv(cubemapShader.uniforms["view"], 1, GL_FALSE, &viewMatrixSansTranslation[0][0]);
         
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(100.0f, 100.0f, 100.0f));
+		model = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f));
 		glUniformMatrix4fv(cubemapShader.uniforms["model"], 1, GL_FALSE, &model[0][0]);
         
-		glActiveTexture(GL_TEXTURE0 + cubemapTexture.index);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture.ID);
+		cubemapTexture.BindTextureCubemap();
         
-		glBindVertexArray(cubemap.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, (int)cubemap.numVertices);
+		glBindVertexArray(cubemapMesh.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, (int)cubemapMesh.numVertices);
         
 		SDL_GL_SwapWindow(display.window);
         
@@ -146,9 +151,9 @@ int main()
 		end = SDL_GetPerformanceCounter();
         
 		float elapsed = (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
-		if(elapsed < targetFPS)
+		if(elapsed < targetMS)
 		{
-			SDL_Delay((Uint32)floor(targetFPS - elapsed));
+			SDL_Delay((Uint32)floor(targetMS - elapsed));
 		}
 		end = SDL_GetPerformanceCounter();
 		elapsed = (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;

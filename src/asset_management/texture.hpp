@@ -7,6 +7,7 @@ struct Texture
 	int width, height, channels;
 
 	static int numTexturesLoaded;
-};
 
-void BindTexture(Texture *tex);
+	void BindTexture2D();
+	void BindTextureCubemap();
+};

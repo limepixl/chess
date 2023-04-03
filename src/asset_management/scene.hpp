@@ -20,6 +20,13 @@ struct Entity
 	glm::vec3 scale;
 	int side;
 	glm::vec3 tint;
+
+	Entity(const glm::vec3 &position,
+	       const glm::vec3 &rotation,
+		   const glm::vec3 &scale,
+		   int meshIndex,
+		   int side,
+		   const glm::vec3 &tint = glm::vec3(0.0f));
 };
 
 bool operator==(const Entity& left, const Entity& right);

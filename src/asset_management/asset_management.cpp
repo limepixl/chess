@@ -487,7 +487,7 @@ Scene LoadSceneFromFile(const char *path, State *state)
 				glm::vec3 scale(sx, sy, sz);
 				
 				meshIndex++;
-				entities.push_back({meshIndex, translation, rotation, scale, side});
+				entities.push_back(Entity(translation, rotation, scale, meshIndex, side));
 
 				int x = int(tx / 5.0f);
 				int y = int(tz / 5.0f);

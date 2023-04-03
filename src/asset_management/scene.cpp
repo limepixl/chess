@@ -14,6 +14,17 @@ bool operator==(const Entity& left, const Entity& right)
         left.tint == right.tint;
 }
 
+Entity::Entity(const glm::vec3 &position,
+	   		   const glm::vec3 &rotation,
+	   		   const glm::vec3 &scale,
+	   		   int meshIndex,
+	   		   int side,
+	   		   const glm::vec3 &tint)
+	: meshIndex(meshIndex), position(position), rotation(rotation), scale(scale), side(side), tint(tint)
+{
+
+}
+
 void DrawScene(Scene *scene, Shader *shader, Shader *ghostShader, State *state)
 {
 	// Draw all actual pieces
@@ -415,7 +426,7 @@ bool RayHit(glm::vec3 &rayOrigin, glm::vec3 &rayDir, std::vector<Entity> &entiti
 static inline void AddToVector(std::vector<Entity> &ghosts, Entity *hitEntity, const glm::ivec2 &pos)
 {
 	glm::vec3 tmpPos(pos.x * 5.0f, 0.0f, pos.y * 5.0f);
-	Entity tmp{hitEntity->meshIndex, tmpPos, hitEntity->rotation, hitEntity->scale, hitEntity->side, glm::vec3(0)};
+	Entity tmp(tmpPos, hitEntity->rotation, hitEntity->scale, hitEntity->meshIndex, hitEntity->side);
 	ghosts.push_back(tmp);
 }
 
